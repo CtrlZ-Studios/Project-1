@@ -1,18 +1,18 @@
 README
 
-Link to the github.com page:  
+Link to the github.com page:<br/>
 
-Implemented features (YouTube link)  
+Implemented features (YouTube link)<br/><br/>
 
-Shaheer Ali (Shaheer-A-W)  
-Camille lugo (camilleI1)  
-Javier Jiménez (javierjm06)  
-Aran Estera (Aran-Estera-Puig)  
+Shaheer Ali (Shaheer-A-W)<br/>
+Camille lugo (camilleI1)<br/>
+Javier Jiménez (javierjm06)<br/>
+Aran Estera (Aran-Estera-Puig)<br/><br/>
 
-Description of the game (short):  
+Description of the game (short):<br/><br/><br/>
 
-How to play:  
+How to play:<br/><br/><br/>
 
-Controls:  
+Controls:<br/><br/><br/>
 
-Features implemented (list):  
+Features implemented (list):<br/><br/><br/>
