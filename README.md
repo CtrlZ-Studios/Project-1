@@ -4,7 +4,7 @@ Link to the github.com page:
 
 Implemented features (YouTube link)
 
-Shaheer Ali (Shaheer-A-W)
+Shaheer Ali (Shaheer-A-W)\n
 Camille lugo (camilleI1)
 Javier Jiménez (javierjm06)
 Aran Estera (Aran-Estera-Puig)
