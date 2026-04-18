@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\chsha\Documents\GitHub\Project-1\Project1AlexKidd\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\chsha\Documents\GitHub\Project-1\Project1AlexKidd\GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\chsha\Documents\GitHub\Project-1\Project1AlexKidd\PlayerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\chsha\Documents\GitHub\Project-1\Project1AlexKidd\MapManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\chsha\Documents\GitHub\Project-1\Project1AlexKidd\SoundManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\chsha\Documents\GitHub\Project-1\Project1AlexKidd\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6EC52D80-CB94-3B12-9893-A4B95FE679BC}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
