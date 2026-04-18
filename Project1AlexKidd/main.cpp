@@ -12,9 +12,11 @@ int main() {
     
     Camera2D camera = { 0 };
     camera.target = game.GetPlayerManager()->GetPosition();
-    camera.offset = { (float)screenWidth / 2, (float)screenHeight / 2 };
+    // Offset centers the player on screen, accounting for the zoom factor
+    camera.offset = { (float)screenWidth / 2.0f - (PlayerManager::frameWidth * 3.0f / 2.0f), 
+                      (float)screenHeight / 2.0f - (PlayerManager::frameHeight * 3.0f / 2.0f) };
     camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera.zoom = 3.0f;
 
     SetTargetFPS(60);
 
@@ -28,20 +30,16 @@ int main() {
 
         // Camera Clamping
         // Prevent camera from showing area outside [0, WORLD_WIDTH] and [0, WORLD_HEIGHT]
-        
-        // Horizontal clamping
-        if (camera.target.x < screenWidth / 2.0f) {
-            camera.target.x = screenWidth / 2.0f;
-        } else if (camera.target.x > WORLD_WIDTH - screenWidth / 2.0f) {
-            camera.target.x = WORLD_WIDTH - screenWidth / 2.0f;
-        }
+        // The visible area in world space depends on the zoom factor
+        float minX = camera.offset.x / camera.zoom;
+        float maxX = WORLD_WIDTH - (screenWidth - camera.offset.x) / camera.zoom;
+        float minY = camera.offset.y / camera.zoom;
+        float maxY = WORLD_HEIGHT - (screenHeight - camera.offset.y) / camera.zoom;
 
-        // Vertical clamping
-        if (camera.target.y < screenHeight / 2.0f) {
-            camera.target.y = screenHeight / 2.0f;
-        } else if (camera.target.y > WORLD_HEIGHT - screenHeight / 2.0f) {
-            camera.target.y = WORLD_HEIGHT - screenHeight / 2.0f;
-        }
+        if (camera.target.x < minX) camera.target.x = minX;
+        if (camera.target.x > maxX) camera.target.x = maxX;
+        if (camera.target.y < minY) camera.target.y = minY;
+        if (camera.target.y > maxY) camera.target.y = maxY;
 
         // Draw
         BeginDrawing();

@@ -49,16 +49,16 @@ void PlayerManager::Update(float deltaTime, Rectangle floor) {
 
     // Clamp position within world bounds
     if (position.x < 0) position.x = 0;
-    if (position.x > WORLD_WIDTH - frameWidth) position.x = WORLD_WIDTH - frameWidth;
+    if (position.x > WORLD_WIDTH - PlayerManager::frameWidth) position.x = WORLD_WIDTH - PlayerManager::frameWidth;
     
     if (position.y < 0) position.y = 0;
-    if (position.y > WORLD_HEIGHT - frameHeight) position.y = WORLD_HEIGHT - frameHeight;
+    if (position.y > WORLD_HEIGHT - PlayerManager::frameHeight) position.y = WORLD_HEIGHT - PlayerManager::frameHeight;
 
     // Floor Collision
     isGrounded = false;
-    if (CheckCollisionRecs({ position.x, position.y, (float)frameWidth, (float)frameHeight }, floor)) {
+    if (CheckCollisionRecs({ position.x, position.y, (float)PlayerManager::frameWidth, (float)PlayerManager::frameHeight }, floor)) {
         if (velocity.y > 0) {
-            position.y = floor.y - frameHeight;
+            position.y = floor.y - PlayerManager::frameHeight;
             velocity.y = 0;
             isGrounded = true;
         }
@@ -87,15 +87,15 @@ void PlayerManager::Update(float deltaTime, Rectangle floor) {
 void PlayerManager::Draw() {
     if (spriteLoaded) {
         Rectangle source = { 
-            (float)currentFrame * frameWidth, 
+            (float)currentFrame * PlayerManager::frameWidth, 
             0, 
-            facingRight ? (float)frameWidth : -(float)frameWidth, 
-            (float)frameHeight 
+            facingRight ? (float)PlayerManager::frameWidth : -(float)PlayerManager::frameWidth, 
+            (float)PlayerManager::frameHeight 
         };
         DrawTextureRec(spriteSheet, source, position, WHITE);
     } else {
         // Fallback
-        DrawRectangleV(position, { (float)frameWidth, (float)frameHeight }, BLUE);
+        DrawRectangleV(position, { (float)PlayerManager::frameWidth, (float)PlayerManager::frameHeight }, BLUE);
     }
 }
 

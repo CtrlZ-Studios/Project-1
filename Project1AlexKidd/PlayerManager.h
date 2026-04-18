@@ -12,6 +12,10 @@ public:
     void Draw();
     Vector2 GetPosition() const;
 
+    // Constants
+    static const int frameWidth = 15;
+    static const int frameHeight = 24;
+
 private:
     Vector2 position;
     Vector2 velocity;
@@ -26,12 +30,10 @@ private:
     float frameTimer;
     float frameDuration;
 
-    // Constants
+    // Movement Constants
     const float moveSpeed = 150.0f;
     const float jumpForce = -350.0f;
     const float gravity = 1000.0f;
-    const int frameWidth = 15;
-    const int frameHeight = 24;
 };
 
 #endif // PLAYER_MANAGER_H
