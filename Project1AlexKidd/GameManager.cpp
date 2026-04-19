@@ -14,15 +14,28 @@ GameManager::~GameManager() {
 
 void GameManager::Update() {
     float dt = GetFrameTime();
+    if (dt > 0.05f) dt = 0.05f;
     
+    if (IsKeyPressed(KEY_F1)) {
+        showDebugHitboxes = !showDebugHitboxes;
+    }
+
     // Update Sound (Music Stream)
     sound->Update();
     
     // Update Player with Map collision
-    player->Update(dt, map->GetFloorBounds());
+    player->Update(dt, *map);
+
+    // Map Interaction
+    if (player->GetState() == PlayerState::ATTACKING) {
+        map->InteractWithMap(player->GetAttackHitbox(), 2); // 2 = Destructible
+    }
+    
+    // Collectible interaction (always check body hitbox)
+    map->InteractWithMap(player->GetHitbox(), 3); // 3 = Collectible
 }
 
 void GameManager::Draw() {
     map->Draw();
-    player->Draw();
+    player->Draw(showDebugHitboxes);
 }

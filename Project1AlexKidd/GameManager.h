@@ -21,6 +21,7 @@ private:
     PlayerManager* player;
     MapManager* map;
     SoundManager* sound;
+    bool showDebugHitboxes = false;
 };
 
 #endif // GAME_MANAGER_H

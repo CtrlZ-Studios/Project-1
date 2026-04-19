@@ -4,9 +4,11 @@
 #include "raylib.h"
 #include <vector>
 
-const int WORLD_WIDTH = 2000;
-const int WORLD_HEIGHT = 450;
+const int MAP_ROWS = 12;
+const int MAP_COLS = 16;
 const int TILE_SIZE = 16;
+const int WORLD_WIDTH = MAP_COLS * TILE_SIZE;
+const int WORLD_HEIGHT = MAP_ROWS * TILE_SIZE;
 
 class MapManager {
 public:
@@ -14,12 +16,27 @@ public:
     ~MapManager();
 
     void Draw();
-    Rectangle GetFloorBounds() const;
+    void InteractWithMap(Rectangle hitbox, int interactionType);
+    bool CheckCollision(Rectangle hitbox) const;
 
 private:
     Texture2D tileset;
     bool tilesetLoaded;
-    Rectangle floorRect;
+    // Assuming MAP_ROWS is 12 and MAP_COLS is 16
+    int mapData[12][16] = {
+        {4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,1,0,1,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,0,2,2,0,5},
+        {4,0,0,0,0,0,0,0,0,0,0,1,1,1,0,5},
+        {4,0,0,3,0,0,0,0,0,0,3,0,0,0,0,5},
+        {4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5}
+    };
 };
 
 #endif // MAP_MANAGER_H

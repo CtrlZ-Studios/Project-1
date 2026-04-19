@@ -3,18 +3,33 @@
 
 #include "raylib.h"
 
+enum class PlayerState {
+    IDLE,
+    WALKING,
+    JUMPING,
+    CROUCHING,
+    ATTACKING
+};
+
+class MapManager; // Forward declaration
+
 class PlayerManager {
 public:
     PlayerManager();
     ~PlayerManager();
 
-    void Update(float deltaTime, Rectangle floor);
-    void Draw();
+    void Update(float deltaTime, const MapManager& map);
+    void Draw(bool showDebug = false);
     Vector2 GetPosition() const;
+    Rectangle GetHitbox() const;
+    Rectangle GetAttackHitbox() const;
+    PlayerState GetState() const { return state; }
 
     // Constants
-    static const int frameWidth = 15;
+    static const int frameWidth = 24;
     static const int frameHeight = 24;
+    static const int spineOffset = 8;
+    static const int crouchHitboxHeight = 16;
 
 private:
     Vector2 position;
@@ -25,15 +40,24 @@ private:
     Texture2D spriteSheet;
     bool spriteLoaded;
 
-    // Animation variables
+    // Last input priority tracking
+    int lastMoveKeyPressed; // 0: None, 1: Left (A), 2: Right (D)
+
+    // Animation and State variables
+    PlayerState state;
     int currentFrame;
     float frameTimer;
     float frameDuration;
+    float attackTimer;
+    Rectangle attackHitbox;
 
     // Movement Constants
-    const float moveSpeed = 150.0f;
-    const float jumpForce = -350.0f;
-    const float gravity = 1000.0f;
+    const float maxMoveSpeed = 120.0f;
+    const float moveAcceleration = 1000.0f;
+    const float groundFriction = 480.0f;
+    const float gravity = 800.0f;
+    const float jumpForceStanding = -277.13f; // Height: 3 tiles (48px) -> sqrt(2 * 1600 * 48)
+    const float jumpForceMoving = -320.0f;   // Height: 4 tiles (64px) -> sqrt(2 * 1600 * 64)
 };
 
 #endif // PLAYER_MANAGER_H

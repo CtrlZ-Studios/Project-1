@@ -1,3 +1,0 @@
-C:/Users/chsha/Documents/GitHub/Project-1/build/CMakeFiles/Project1AlexKidd.dir
-C:/Users/chsha/Documents/GitHub/Project-1/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/chsha/Documents/GitHub/Project-1/build/CMakeFiles/ZERO_CHECK.dir
