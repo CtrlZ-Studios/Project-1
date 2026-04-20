@@ -56,9 +56,9 @@ private:
     const float maxMoveSpeed = 120.0f;
     const float moveAcceleration = 1000.0f;
     const float groundFriction = 480.0f;
-    const float gravity = 800.0f;
-    const float jumpForceStanding = -277.13f; // Height: 3 tiles (48px) -> sqrt(2 * 1600 * 48)
-    const float jumpForceMoving = -320.0f;   // Height: 4 tiles (64px) -> sqrt(2 * 1600 * 64)
+    const float gravity = 600.0f;
+    const float jumpForceStanding = -240.0f; // Height: 3 tiles (48px) -> sqrt(2 * 1600 * 48)
+    const float jumpForceMoving = -277.13f;   // Height: 4 tiles (64px) -> sqrt(2 * 1600 * 64)
 };
 
 #endif // PLAYER_MANAGER_H
