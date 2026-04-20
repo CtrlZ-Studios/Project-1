@@ -60,6 +60,11 @@ void MapManager::Draw() {
                         case 9: source = {32, 32, 16, 16}; break; // Right corner (3rd tile, 3rd row)
                         case 10: source = {16, 32, 16, 16}; break; // Dirt (2nd tile, 3rd row)
                         case 11: source = {16, 16, 16, 16}; break; // Barrier block (not drawn, but solid)
+                        case 12: source = {32, 128, 16, 16}; break; // Grass_2_top
+                        case 13: source = {0, 144, 16, 16}; break; // Grass_2_block
+                        case 14: source = {0, 128, 16, 16}; break; // Red Ball
+                        case 15: source = {16, 128, 16, 16}; break; // Blue Ball
+
                     }
                     DrawTextureRec(tileset, source, pos, WHITE);
                 } else {
@@ -94,7 +99,7 @@ void MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
             Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
             
             if (CheckCollisionRecs(hitbox, tileRect)) {
-                if (interactionType == 2 && mapData[r][c] == 2) {
+                if (interactionType == 2 && (mapData[r][c] == 2 || mapData[r][c] == 15)) {
                     // Attack destroys destructible blocks
                     mapData[r][c] = 0;
                 } else if (interactionType == 3 && mapData[r][c] == 3) {
@@ -121,7 +126,7 @@ bool MapManager::CheckCollision(Rectangle hitbox) const {
 
     for (int r = startRow; r <= endRow; r++) {
         for (int c = startCol; c <= endCol; c++) {
-            if (mapData[r][c] == 1 || mapData[r][c] == 2 || mapData[r][c] == 4 || mapData[r][c] == 5 || mapData[r][c] == 6 || mapData[r][c] == 7 || mapData[r][c] == 8 || mapData[r][c] == 9 || mapData[r][c] == 10 || mapData[r][c] == 11) {  
+            if (mapData[r][c] == 1 || mapData[r][c] == 2 || mapData[r][c] == 4 || mapData[r][c] == 5 || mapData[r][c] == 6 || mapData[r][c] == 7 || mapData[r][c] == 8 || mapData[r][c] == 9 || mapData[r][c] == 10 || mapData[r][c] == 11 || mapData[r][c] == 12 || mapData[r][c] == 13 || mapData[r][c] == 14 || mapData[r][c] == 15) {
                 Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
                 if (CheckCollisionRecs(hitbox, tileRect)) {
                     return true;
