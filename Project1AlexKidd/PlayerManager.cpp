@@ -11,6 +11,7 @@ PlayerManager::PlayerManager(Vector2 spawnPos) {
     state = PlayerState::IDLE;
     attackTimer = 0.0f;
     attackHitbox = { 0, 0, 0, 0 };
+    attackHitboxActive = false;
     lastMoveKeyPressed = 0;
     
     spriteSheet = LoadTexture("Sprites/alex.png");
@@ -42,6 +43,11 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     bool moveLeftInput = IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT);
     bool moveRightInput = IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT);
     bool crouchInput = (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) && isGrounded;
+
+    // Reset attackHitboxActive when NOT attacking
+    if (state != PlayerState::ATTACKING) {
+        attackHitboxActive = false;
+    }
 
     // Last Input Priority Logic
     if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) lastMoveKeyPressed = 1;
@@ -145,6 +151,7 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         // Trigger Attack
         if (attackInput) {
             attackTimer = 0.2f;
+            attackHitboxActive = true;
             if (isGrounded) velocity.x = 0; // Stop horizontal movement on ground when attacking
         }
     }
@@ -287,7 +294,7 @@ void PlayerManager::Draw(bool showDebug) {
         
         DrawRectangleRec(debugBox, { 0, 255, 0, 150 });
         
-        if (state == PlayerState::ATTACKING) {
+        if (state == PlayerState::ATTACKING && attackHitboxActive) {
             DrawRectangleRec(attackHitbox, { 255, 0, 0, 150 });
         }
     }

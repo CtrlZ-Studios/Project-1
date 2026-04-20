@@ -81,7 +81,9 @@ void MapManager::Draw() {
     }
 }
 
-void MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
+bool MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
+    bool hitOccurred = false;
+    
     // Determine which tiles the hitbox overlaps
     int startCol = (int)(hitbox.x / TILE_SIZE);
     int endCol = (int)((hitbox.x + hitbox.width) / TILE_SIZE);
@@ -94,22 +96,49 @@ void MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
     if (startRow < 0) startRow = 0;
     if (endRow >= MAP_ROWS) endRow = MAP_ROWS - 1;
 
-    for (int r = startRow; r <= endRow; r++) {
-        for (int c = startCol; c <= endCol; c++) {
-            Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
-            
-            if (CheckCollisionRecs(hitbox, tileRect)) {
-                if (interactionType == 2 && (mapData[r][c] == 2 || mapData[r][c] == 15)) {
-                    // Attack destroys destructible blocks
-                    mapData[r][c] = 0;
-                } else if (interactionType == 3 && mapData[r][c] == 3) {
-                    // Body collects items
-                    mapData[r][c] = 0;
-                    std::cout << "Collectible picked up at [" << r << "," << c << "]" << std::endl;
+    if (interactionType == 2) {
+        // Attack logic: Destroy only the block with the largest overlap area
+        int bestR = -1;
+        int bestC = -1;
+        float maxArea = 0.0f;
+
+        for (int r = startRow; r <= endRow; r++) {
+            for (int c = startCol; c <= endCol; c++) {
+                if (mapData[r][c] == 2 || mapData[r][c] == 15) {
+                    Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
+                    Rectangle overlap = GetCollisionRec(hitbox, tileRect);
+                    float area = overlap.width * overlap.height;
+
+                    if (area > maxArea) {
+                        maxArea = area;
+                        bestR = r;
+                        bestC = c;
+                    }
+                }
+            }
+        }
+
+        if (bestR != -1) {
+            mapData[bestR][bestC] = 0;
+            hitOccurred = true;
+        }
+    } else if (interactionType == 3) {
+        // Collection logic: Can collect multiple items
+        for (int r = startRow; r <= endRow; r++) {
+            for (int c = startCol; c <= endCol; c++) {
+                if (mapData[r][c] == 3) {
+                    Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
+                    if (CheckCollisionRecs(hitbox, tileRect)) {
+                        mapData[r][c] = 0;
+                        hitOccurred = true;
+                        std::cout << "Collectible picked up at [" << r << "," << c << "]" << std::endl;
+                    }
                 }
             }
         }
     }
+    
+    return hitOccurred;
 }
 
 bool MapManager::CheckCollision(Rectangle hitbox) const {

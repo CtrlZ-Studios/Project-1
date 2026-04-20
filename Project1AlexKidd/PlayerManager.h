@@ -26,6 +26,8 @@ public:
     Rectangle GetHitbox() const;
     Rectangle GetAttackHitbox() const;
     PlayerState GetState() const { return state; }
+    bool IsAttackHitboxActive() const { return attackHitboxActive; }
+    void DeactivateAttackHitbox() { attackHitboxActive = false; }
 
     // Constants
     static const int frameWidth = 24;
@@ -52,6 +54,7 @@ private:
     float frameDuration;
     float attackTimer;
     Rectangle attackHitbox;
+    bool attackHitboxActive;
 
     // Movement Constants
     const float maxMoveSpeed = 120.0f;

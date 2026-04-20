@@ -34,8 +34,10 @@ void GameManager::Update() {
     player->Update(dt, *map);
 
     // Map Interaction
-    if (player->GetState() == PlayerState::ATTACKING) {
-        map->InteractWithMap(player->GetAttackHitbox(), 2); // 2 = Destructible
+    if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
+        if (map->InteractWithMap(player->GetAttackHitbox(), 2)) { // 2 = Destructible
+            player->DeactivateAttackHitbox();
+        }
     }
     
     // Collectible interaction (always check body hitbox)

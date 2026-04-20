@@ -16,7 +16,7 @@ public:
     ~MapManager();
 
     void Draw();
-    void InteractWithMap(Rectangle hitbox, int interactionType);
+    bool InteractWithMap(Rectangle hitbox, int interactionType);
     bool CheckCollision(Rectangle hitbox) const;
     Vector2 GetSpawnPosition() const { return spawnPosition; }
 
