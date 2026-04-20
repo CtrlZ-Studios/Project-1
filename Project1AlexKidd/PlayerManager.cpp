@@ -116,12 +116,8 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     if (velocity.x > maxMoveSpeed) velocity.x = maxMoveSpeed;
     if (velocity.x < -maxMoveSpeed) velocity.x = -maxMoveSpeed;
     
-    // 4. X Collision (Moved UP so it stops speed BEFORE jump check)
-    position.x += velocity.x * deltaTime;
-    if (map.CheckCollision(GetHitbox())) {
-        position.x -= velocity.x * deltaTime;
-        velocity.x = 0;
-    }
+    // --- TASK 1: RESOLVE Y COLLISION BEFORE X COLLISION ---
+    // This allows the player to be pushed out of the floor/corners before horizontal movement is evaluated.
 
     // Gravity
     velocity.y += gravity * deltaTime;
@@ -153,7 +149,7 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         }
     }
 
-// 5. Y Collision (With Thinner Hitbox, Ceiling Snap, AND Sprite Offset Fix)
+    // Y Movement and Collision
     isGrounded = false;
     position.y += velocity.y * deltaTime;
     
@@ -162,22 +158,40 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     yHitbox.x += 2;
     yHitbox.width -= 4;
 
-    // --- NEW: Account for the 2-pixel transparent gap in the jumping sprite! ---
-    // If he's in the air, shrink the top of the hitbox by 2 pixels.
-    int topOffset = (!isGrounded) ? 2 : 0; 
+    // Account for the 2-pixel transparent gap in the jumping sprite
+    int topOffset = (state == PlayerState::JUMPING) ? 2 : 0; 
     yHitbox.y += topOffset;
     yHitbox.height -= topOffset;
 
     if (map.CheckCollision(yHitbox)) {
         if (velocity.y > 0) { // Falling down onto a floor
             isGrounded = true;
-            // Snap perfectly to the grid and STAY there
             position.y = floorf((position.y + frameHeight) / TILE_SIZE) * TILE_SIZE - frameHeight;
         } else if (velocity.y < 0) { // Jumping up into a ceiling
-            // Snap perfectly to the bottom of the tile above, minus the empty sprite space!
             position.y = floorf((position.y + topOffset) / TILE_SIZE) * TILE_SIZE + TILE_SIZE - topOffset;
         }
-        velocity.y = 0; // Stop vertical momentum
+        velocity.y = 0;
+    }
+
+    // --- X Movement and Collision ---
+    position.x += velocity.x * deltaTime;
+    Rectangle currentHitbox = GetHitbox();
+    if (map.CheckCollision(currentHitbox)) {
+        // Corner/Edge Case: If we hit a wall, check if we can actually step up (snap to floor)
+        // instead of stopping horizontal movement. This fixes the 1-pixel "AABB Trap".
+        Rectangle stepUpHitbox = currentHitbox;
+        stepUpHitbox.y -= 2.0f; // Check 2 pixels higher
+        
+        if (!map.CheckCollision(stepUpHitbox)) {
+            // It's a corner! Snap player to the floor and allow X movement
+            position.y = floorf((position.y + frameHeight) / TILE_SIZE) * TILE_SIZE - frameHeight;
+            isGrounded = true;
+            velocity.y = 0;
+        } else {
+            // Actual wall collision
+            position.x -= velocity.x * deltaTime;
+            velocity.x = 0;
+        }
     }
 
     // World Boundaries
@@ -201,10 +215,12 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         state = PlayerState::IDLE;
     }
 
-    // 7. Attack Hitbox Logic
+    // 7. Attack Hitbox Logic (TASK 2: Shrink by 1px on all sides)
     if (state == PlayerState::ATTACKING) {
-        float hitboxX = facingRight ? position.x + 4 : position.x - 16;
-        attackHitbox = { hitboxX, position.y + 7, 12, 10 };
+        float baseHitboxX = facingRight ? position.x + 4 : position.x - 16;
+        // Original: { baseHitboxX, position.y + 7, 12, 10 }
+        // New: Shrunk by 1px on all sides -> x+1, y+1, width-2, height-2
+        attackHitbox = { baseHitboxX + 1, position.y + 8, 10, 8 };
     } else {
         attackHitbox = { 0, 0, 0, 0 };
     }
