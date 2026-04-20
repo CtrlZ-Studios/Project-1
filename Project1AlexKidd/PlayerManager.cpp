@@ -139,6 +139,13 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
             isGrounded = false;
         }
 
+        // Variable Jump Height (Jump Cut)
+        if (!isGrounded && velocity.y < 0) {
+            if (IsKeyReleased(KEY_SPACE) || IsKeyReleased(KEY_W)) {
+                velocity.y *= jumpCutMultiplier;
+            }
+        }
+
         // Trigger Attack
         if (attackInput) {
             attackTimer = 0.2f;
