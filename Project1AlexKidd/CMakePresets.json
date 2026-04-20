@@ -5,7 +5,7 @@
             "name": "project1alexkidd",
             "displayName": "Configure preset using toolchain file",
             "description": "Sets Ninja generator, build and install directory",
-            "generator": "Visual Studio 17 2022",
+            "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",

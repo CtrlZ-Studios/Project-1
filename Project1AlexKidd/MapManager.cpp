@@ -49,11 +49,15 @@ void MapManager::Draw() {
                     Rectangle source = { 0, 0, 16, 16 }; 
                     
                     switch (mapData[r][c]) {
-                        case 1: source = { 16, 0, 16, 16 }; break;  // Solid (2nd tile, 1st row)
+                        case 1: source = { 16, 0, 16, 16 }; break;  // Grass block (2nd tile, 1st row)
                         case 2: source = {0, 48, 16, 16}; break; // Destructible block (1st tile, 4th row)
                         case 3: source = {16, 48, 16, 16}; break; // Collectible block (2nd tile, 4th row)
                         case 4: source = {32, 16, 16, 16}; break; // Left wall (2nd tile, 2nd row)
                         case 5: source = {0, 16, 16, 16}; break; // Right wall (1st tile, 2nd row)
+                        case 6: source = {0, 0, 16, 16}; break; // Left corner grassy (1st tile, 1st row)
+                        case 7: source = {32, 0, 16, 16}; break; // Right corner grassy (3rd tile, 1st row)
+                        case 8: source = {0, 32, 16, 16}; break; // Left corner (1st tile, 3rd row)
+                        case 9: source = {32, 32, 16, 16}; break; // Right corner (2nd tile, 3rd row)
                     }
                     DrawTextureRec(tileset, source, pos, WHITE);
                 } else {
@@ -115,7 +119,7 @@ bool MapManager::CheckCollision(Rectangle hitbox) const {
 
     for (int r = startRow; r <= endRow; r++) {
         for (int c = startCol; c <= endCol; c++) {
-            if (mapData[r][c] == 1 || mapData[r][c] == 2 || mapData[r][c] == 4 || mapData[r][c] == 5) {
+            if (mapData[r][c] == 1 || mapData[r][c] == 2 || mapData[r][c] == 4 || mapData[r][c] == 5 || mapData[r][c] == 6 || mapData[r][c] == 7 || mapData[r][c] == 8 || mapData[r][c] == 9) {
                 Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
                 if (CheckCollisionRecs(hitbox, tileRect)) {
                     return true;
