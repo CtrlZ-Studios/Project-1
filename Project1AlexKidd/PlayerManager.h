@@ -57,6 +57,7 @@ private:
     const float moveAcceleration = 1000.0f;
     const float groundFriction = 480.0f;
     const float gravity = 800.0f;
+    const float terminalVelocity = 350.0f;
     const float jumpForceStanding = -277.13f; // Height: 3 tiles (48px) -> sqrt(2 * 1600 * 48)
     const float jumpForceMoving = -320.0f;   // Height: 4 tiles (64px) -> sqrt(2 * 1600 * 64)
 };

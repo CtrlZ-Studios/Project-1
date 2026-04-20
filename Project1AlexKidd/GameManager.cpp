@@ -20,6 +20,13 @@ void GameManager::Update() {
         showDebugHitboxes = !showDebugHitboxes;
     }
 
+    if (IsKeyPressed(KEY_F2)) {
+        delete player;
+        delete map;
+        map = new MapManager();
+        player = new PlayerManager(map->GetSpawnPosition());
+    }
+
     // Update Sound (Music Stream)
     sound->Update();
     

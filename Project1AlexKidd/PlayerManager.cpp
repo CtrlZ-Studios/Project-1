@@ -108,11 +108,12 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
 
     // Gravity
     velocity.y += gravity * deltaTime;
+    if (velocity.y > terminalVelocity) velocity.y = terminalVelocity;
 
     // Jumping and Attack Trigger (Only if NOT already attacking or crouching)
     if (attackTimer <= 0 && !crouchInput) {
         // Jumping
-        if (isGrounded && IsKeyPressed(KEY_SPACE)) {
+        if (isGrounded && (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W))) {
             if (fabs(velocity.x) > 0.5f) {
                 velocity.y = jumpForceMoving;
             } else {
