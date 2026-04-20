@@ -69,6 +69,8 @@ void MapManager::Draw() {
                         case 13: source = {0, 144, 16, 16}; break; // Grass_2_block
                         case 14: source = {0, 128, 16, 16}; break; // Red Ball
                         case 15: source = {16, 128, 16, 16}; break; // Blue Ball
+                        case 16: source = {16, 160, 16, 16}; break; // Left side of cloud
+                        case 17: source = {32, 160, 16, 16}; break; // Right side of cloud
                     }
                     DrawTextureRec(tileset, source, pos, WHITE);
                 }
