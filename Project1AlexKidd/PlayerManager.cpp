@@ -59,6 +59,12 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
 
     // 3. Movement Logic
     
+    // Check for Blocked Crouch conditions
+    bool wasCrouching = (state == PlayerState::CROUCHING || state == PlayerState::BLOCKED_CROUCH);
+    Rectangle headSpace = { position.x - 5, position.y, 10, (float)(frameHeight - crouchHitboxHeight) };
+    bool isCeilingBlocked = map.CheckCollision(headSpace);
+    bool shouldBeBlockedCrouch = wasCrouching && !crouchInput && isCeilingBlocked && isGrounded;
+
     // Crouch Lock: Cannot build speed, but can change facing direction
     if (crouchInput) {
         if (activeDirection == 1) facingRight = false;
@@ -70,6 +76,17 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         } else if (velocity.x < 0) {
             velocity.x += groundFriction * deltaTime;
             if (velocity.x > 0) velocity.x = 0;
+        }
+    } else if (shouldBeBlockedCrouch) {
+        // Blocked Crouch Movement (Slow)
+        if (activeDirection == 1) {
+            velocity.x = -blockedCrouchSpeed;
+            facingRight = false;
+        } else if (activeDirection == 2) {
+            velocity.x = blockedCrouchSpeed;
+            facingRight = true;
+        } else {
+            velocity.x = 0;
         }
     } else {
         // Normal Movement (Allowed if not attacking on ground)
@@ -111,7 +128,7 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     if (velocity.y > terminalVelocity) velocity.y = terminalVelocity;
 
     // Jumping and Attack Trigger (Only if NOT already attacking or crouching)
-    if (attackTimer <= 0 && !crouchInput) {
+    if (attackTimer <= 0 && !crouchInput && !shouldBeBlockedCrouch) {
         // Jumping
         if (isGrounded && (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W))) {
             if (fabs(velocity.x) > 0.5f) {
@@ -167,6 +184,8 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         state = PlayerState::ATTACKING;
     } else if (isGrounded && crouchInput) {
         state = PlayerState::CROUCHING;
+    } else if (isGrounded && shouldBeBlockedCrouch) {
+        state = PlayerState::BLOCKED_CROUCH;
     } else if (!isGrounded) {
         state = PlayerState::JUMPING;
     } else if (fabs(velocity.x) > 0.5f) {
@@ -189,6 +208,7 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
             currentFrame = 5;
             break;
         case PlayerState::CROUCHING:
+        case PlayerState::BLOCKED_CROUCH:
             currentFrame = 7;
             break;
         case PlayerState::JUMPING:
@@ -259,7 +279,7 @@ Rectangle PlayerManager::GetHitbox() const {
     // However, in Alex Kidd, the crouch hitbox is smaller.
     // If we are currently holding crouch and grounded, we use crouch hitbox.
     // To be safe, let's use the actual state if it's already set to CROUCHING.
-    int currentHitboxHeight = (state == PlayerState::CROUCHING) ? crouchHitboxHeight : frameHeight;
+    int currentHitboxHeight = (state == PlayerState::CROUCHING || state == PlayerState::BLOCKED_CROUCH) ? crouchHitboxHeight : frameHeight;
     return { 
         position.x - 5, 
         position.y + (frameHeight - currentHitboxHeight), 
