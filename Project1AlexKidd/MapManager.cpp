@@ -1,12 +1,25 @@
 #include "MapManager.h"
 #include "raylib.h"
 #include <iostream>
+#include "PlayerManager.h"
 
-MapManager::MapManager() : tilesetLoaded(false) {
-    tileset = LoadTexture("Sprites/tileset.png");
-    if (tileset.id != 0) {
-        tilesetLoaded = true;
+MapManager::MapManager() : tilesetLoaded(false), spawnPosition({100, 150}) {
+    // Scan for spawn marker (-1)
+    for (int r = 0; r < MAP_ROWS; r++) {
+        for (int c = 0; c < MAP_COLS; c++) {
+            if (mapData[r][c] == -1) {
+                // Align feet to the bottom of the tile
+                spawnPosition = {
+                    (float)c * TILE_SIZE + TILE_SIZE / 2.0f,
+                    (float)r * TILE_SIZE + TILE_SIZE - PlayerManager::frameHeight
+                };
+                mapData[r][c] = 0; // Clear the marker
+            }
+        }
     }
+
+    tileset = LoadTexture("Sprites/tileset.png");
+    if (tileset.id != 0) tilesetLoaded = true;
 }
 
 MapManager::~MapManager() {

@@ -16,6 +16,7 @@ class MapManager; // Forward declaration
 class PlayerManager {
 public:
     PlayerManager();
+    PlayerManager(Vector2 spawnPos = {100, 150});
     ~PlayerManager();
 
     void Update(float deltaTime, const MapManager& map);

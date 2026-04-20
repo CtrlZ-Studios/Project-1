@@ -18,6 +18,7 @@ public:
     void Draw();
     void InteractWithMap(Rectangle hitbox, int interactionType);
     bool CheckCollision(Rectangle hitbox) const;
+    Vector2 GetSpawnPosition() const { return spawnPosition; }
 
 private:
     Texture2D tileset;
@@ -37,6 +38,7 @@ private:
         {4,0,0,3,0,0,0,0,0,0,3,0,0,0,0,5},
         {4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5}
     };
+    Vector2 spawnPosition;
 };
 
 #endif // MAP_MANAGER_H

@@ -3,8 +3,8 @@
 #include "raymath.h"
 #include <cmath>
 
-PlayerManager::PlayerManager() {
-    position = { 100, 150 };
+PlayerManager::PlayerManager(Vector2 spawnPos) {
+    position = spawnPos;
     velocity = { 0, 0 };
     isGrounded = false;
     facingRight = true;

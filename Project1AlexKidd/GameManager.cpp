@@ -1,8 +1,8 @@
 #include "GameManager.h"
 
 GameManager::GameManager() {
-    player = new PlayerManager();
-    map = new MapManager();
+    map = new MapManager();   // Map first, so spawn point is ready
+    player = new PlayerManager(map->GetSpawnPosition());
     sound = new SoundManager();
 }
 
