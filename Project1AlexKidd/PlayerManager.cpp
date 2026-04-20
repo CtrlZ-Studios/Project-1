@@ -29,6 +29,24 @@ PlayerManager::~PlayerManager() {
     }
 }
 
+Vector2& PlayerManager::GetPosition() {
+    return position;
+}
+
+Vector2 PlayerManager::GetPosition() const {
+    return position;
+}
+
+Rectangle PlayerManager::GetHitbox() const {
+    int currentHitboxHeight = (state == PlayerState::CROUCHING || state == PlayerState::BLOCKED_CROUCH) ? crouchHitboxHeight : frameHeight;
+    return { 
+        position.x - 5, 
+        position.y + (frameHeight - currentHitboxHeight), 
+        10, 
+        (float)currentHitboxHeight 
+    };
+}
+
 void PlayerManager::Update(float deltaTime, const MapManager& map) {
     // 1. Handle Attack Timer
     if (attackTimer > 0) {
@@ -44,17 +62,14 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     bool moveRightInput = IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT);
     bool crouchInput = (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) && isGrounded;
 
-    // Reset attackHitboxActive when NOT attacking
     if (state != PlayerState::ATTACKING) {
         attackHitboxActive = false;
     }
 
-    // Last Input Priority Logic
     if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) lastMoveKeyPressed = 1;
     if (IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) lastMoveKeyPressed = 2;
     
-    // If holding both, resolve to the last pressed. If holding one, resolve to that one.
-    int activeDirection = 0; // 0 = none, 1 = left, 2 = right
+    int activeDirection = 0;
     if (moveLeftInput && moveRightInput) {
         activeDirection = lastMoveKeyPressed;
     } else if (moveLeftInput) {
@@ -64,18 +79,14 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     }
 
     // 3. Movement Logic
-    
-    // Check for Blocked Crouch conditions
     bool wasCrouching = (state == PlayerState::CROUCHING || state == PlayerState::BLOCKED_CROUCH);
     Rectangle headSpace = { position.x - 5, position.y, 10, (float)(frameHeight - crouchHitboxHeight) };
     bool isCeilingBlocked = map.CheckCollision(headSpace);
     bool shouldBeBlockedCrouch = wasCrouching && !crouchInput && isCeilingBlocked && isGrounded;
 
-    // Crouch Lock: Cannot build speed, but can change facing direction
     if (crouchInput) {
         if (activeDirection == 1) facingRight = false;
         if (activeDirection == 2) facingRight = true;
-        // Friction still applies while crouching so we can slide
         if (velocity.x > 0) {
             velocity.x -= groundFriction * deltaTime;
             if (velocity.x < 0) velocity.x = 0;
@@ -84,7 +95,6 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
             if (velocity.x > 0) velocity.x = 0;
         }
     } else if (shouldBeBlockedCrouch) {
-        // Blocked Crouch Movement (Slow)
         if (activeDirection == 1) {
             velocity.x = -blockedCrouchSpeed;
             facingRight = false;
@@ -95,7 +105,6 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
             velocity.x = 0;
         }
     } else {
-        // Normal Movement (Allowed if not attacking on ground)
         if (attackTimer <= 0 || !isGrounded) {
             if (activeDirection == 1) {
                 velocity.x -= moveAcceleration * deltaTime;
@@ -104,7 +113,6 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
                 velocity.x += moveAcceleration * deltaTime;
                 facingRight = true;
             } else {
-                // Apply Ground Friction when no keys are held
                 if (isGrounded) {
                     if (velocity.x > 0) {
                         velocity.x -= groundFriction * deltaTime;
@@ -118,20 +126,14 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         }
     }
 
-    // Clamp horizontal velocity
     if (velocity.x > maxMoveSpeed) velocity.x = maxMoveSpeed;
     if (velocity.x < -maxMoveSpeed) velocity.x = -maxMoveSpeed;
     
-    // --- TASK 1: RESOLVE Y COLLISION BEFORE X COLLISION ---
-    // This allows the player to be pushed out of the floor/corners before horizontal movement is evaluated.
-
-    // Gravity
+    // --- TASK 2: RESOLVE Y COLLISION BEFORE X COLLISION ---
     velocity.y += gravity * deltaTime;
     if (velocity.y > terminalVelocity) velocity.y = terminalVelocity;
 
-    // Jumping and Attack Trigger (Only if NOT already attacking or crouching)
     if (attackTimer <= 0 && !crouchInput && !shouldBeBlockedCrouch) {
-        // Jumping
         if (isGrounded && (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W))) {
             if (fabs(velocity.x) > 0.5f) {
                 velocity.y = jumpForceMoving;
@@ -140,19 +142,15 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
             }
             isGrounded = false;
         }
-
-        // Variable Jump Height (Jump Cut)
         if (!isGrounded && velocity.y < 0) {
             if (IsKeyReleased(KEY_SPACE) || IsKeyReleased(KEY_W)) {
                 velocity.y *= jumpCutMultiplier;
             }
         }
-
-        // Trigger Attack
         if (attackInput) {
             attackTimer = 0.2f;
             attackHitboxActive = true;
-            if (isGrounded) velocity.x = 0; // Stop horizontal movement on ground when attacking
+            if (isGrounded) velocity.x = 0;
         }
     }
 
@@ -160,21 +158,19 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     isGrounded = false;
     position.y += velocity.y * deltaTime;
     
-    // Thinner hitbox for Y-checks to ignore side walls
     Rectangle yHitbox = GetHitbox();
     yHitbox.x += 2;
     yHitbox.width -= 4;
 
-    // Account for the 2-pixel transparent gap in the jumping sprite
     int topOffset = (state == PlayerState::JUMPING) ? 2 : 0; 
     yHitbox.y += topOffset;
     yHitbox.height -= topOffset;
 
     if (map.CheckCollision(yHitbox)) {
-        if (velocity.y > 0) { // Falling down onto a floor
+        if (velocity.y > 0) {
             isGrounded = true;
             position.y = floorf((position.y + frameHeight) / TILE_SIZE) * TILE_SIZE - frameHeight;
-        } else if (velocity.y < 0) { // Jumping up into a ceiling
+        } else if (velocity.y < 0) {
             position.y = floorf((position.y + topOffset) / TILE_SIZE) * TILE_SIZE + TILE_SIZE - topOffset;
         }
         velocity.y = 0;
@@ -182,26 +178,27 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
 
     // --- X Movement and Collision ---
     position.x += velocity.x * deltaTime;
-    Rectangle currentHitbox = GetHitbox();
-    if (map.CheckCollision(currentHitbox)) {
-        // Corner/Edge Case: If we hit a wall, check if we can actually step up (snap to floor)
-        // instead of stopping horizontal movement. This fixes the 1-pixel "AABB Trap".
-        Rectangle stepUpHitbox = currentHitbox;
-        stepUpHitbox.y -= 2.0f; // Check 2 pixels higher
+    
+    // TASK 2: Fix Vertical Gap Clipping
+    // Use a slightly narrower hitbox for X checks to avoid catching on seams
+    Rectangle xHitbox = GetHitbox();
+    xHitbox.x += 0.5f;
+    xHitbox.width -= 1.0f;
+
+    if (map.CheckCollision(xHitbox)) {
+        Rectangle stepUpHitbox = xHitbox;
+        stepUpHitbox.y -= 2.0f; 
         
         if (!map.CheckCollision(stepUpHitbox)) {
-            // It's a corner! Snap player to the floor and allow X movement
             position.y = floorf((position.y + frameHeight) / TILE_SIZE) * TILE_SIZE - frameHeight;
             isGrounded = true;
             velocity.y = 0;
         } else {
-            // Actual wall collision
             position.x -= velocity.x * deltaTime;
             velocity.x = 0;
         }
     }
 
-    // World Boundaries
     if (position.x - 8 < 0) position.x = 8;
     if (position.x + 16 > WORLD_WIDTH) position.x = (float)WORLD_WIDTH - 16;
     if (position.y < 0) position.y = 0;
@@ -222,11 +219,9 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         state = PlayerState::IDLE;
     }
 
-    // 7. Attack Hitbox Logic (TASK 2: Shrink by 1px on all sides)
+    // 7. Attack Hitbox Logic
     if (state == PlayerState::ATTACKING) {
         float baseHitboxX = facingRight ? position.x + 4 : position.x - 16;
-        // Original: { baseHitboxX, position.y + 7, 12, 10 }
-        // New: Shrunk by 1px on all sides -> x+1, y+1, width-2, height-2
         attackHitbox = { baseHitboxX + 1, position.y + 8, 10, 8 };
     } else {
         attackHitbox = { 0, 0, 0, 0 };
@@ -273,7 +268,6 @@ void PlayerManager::Draw(bool showDebug) {
         
         DrawTextureRec(spriteSheet, source, drawPos, WHITE);
     } else {
-        // Fallback
         Rectangle hb = GetHitbox();
         if (!isGrounded) {
             hb.y += 2;
@@ -283,39 +277,16 @@ void PlayerManager::Draw(bool showDebug) {
     }
 
     if (showDebug) {
-        // Get the base hitbox
         Rectangle debugBox = GetHitbox();
-        
-        // Shrink the top by 2 pixels when in the air, exactly like the physics check!
         if (!isGrounded) {
             debugBox.y += 2;
             debugBox.height -= 2;
         }
-        
         DrawRectangleRec(debugBox, { 0, 255, 0, 150 });
-        
         if (state == PlayerState::ATTACKING && attackHitboxActive) {
             DrawRectangleRec(attackHitbox, { 255, 0, 0, 150 });
         }
     }
-}
-
-Vector2 PlayerManager::GetPosition() const {
-    return position;
-}
-
-Rectangle PlayerManager::GetHitbox() const {
-    // Note: This needs to be consistent during Update, but state might lag.
-    // However, in Alex Kidd, the crouch hitbox is smaller.
-    // If we are currently holding crouch and grounded, we use crouch hitbox.
-    // To be safe, let's use the actual state if it's already set to CROUCHING.
-    int currentHitboxHeight = (state == PlayerState::CROUCHING || state == PlayerState::BLOCKED_CROUCH) ? crouchHitboxHeight : frameHeight;
-    return { 
-        position.x - 5, 
-        position.y + (frameHeight - currentHitboxHeight), 
-        10, 
-        (float)currentHitboxHeight 
-    };
 }
 
 Rectangle PlayerManager::GetAttackHitbox() const {

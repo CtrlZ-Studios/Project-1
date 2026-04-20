@@ -12,6 +12,7 @@ set(SOURCES
     PlayerManager.cpp
     MapManager.cpp
     SoundManager.cpp
+    Enemy.cpp
 )
 
 # Create the executable target

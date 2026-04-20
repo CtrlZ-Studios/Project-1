@@ -22,6 +22,7 @@ public:
 
     void Update(float deltaTime, const MapManager& map);
     void Draw(bool showDebug = false);
+    Vector2& GetPosition();
     Vector2 GetPosition() const;
     Rectangle GetHitbox() const;
     Rectangle GetAttackHitbox() const;
