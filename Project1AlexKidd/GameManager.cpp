@@ -8,8 +8,8 @@ GameManager::GameManager() {
     
     // Initialize Camera
     camera = { 0 };
-    camera.target = player->GetPosition();
     camera.offset = { 256 / 2.0f, 192 / 2.0f };
+    camera.target = { player->GetPosition().x, 144.0f }; // Centered on ground rows (13, 14)
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
     
@@ -51,7 +51,7 @@ void GameManager::RestartLevel() {
     player = new PlayerManager(map->GetSpawnPosition());
     
     // Reset Camera
-    camera.target = player->GetPosition();
+    camera.target = { player->GetPosition().x, 144.0f };
     maxCameraX = camera.target.x;
     
     SpawnEnemies();
@@ -67,7 +67,7 @@ void GameManager::UpdateCamera() {
     }
     
     camera.target.x = floorf(maxCameraX);
-    camera.target.y = 192 / 2.0f; // Lock Y camera for now or keep it centered
+    camera.target.y = 144.0f; // Lock Y camera to show ground at bottom
 
     // Camera Clamping
     float minX = camera.offset.x;
@@ -115,10 +115,7 @@ void GameManager::Update() {
     float leftEdgeX = camera.target.x - camera.offset.x;
     Rectangle playerHb = player->GetHitbox();
     if (playerHb.x < leftEdgeX) {
-        // Simple position correction: move player so its left edge is at the camera's left edge
-        // Since playerHb.x = position.x - 5
         player->GetPosition().x = leftEdgeX + 5; 
-        // Wait, GetPosition returns by value or ref? Check PlayerManager.h
     }
 
     UpdateCamera();

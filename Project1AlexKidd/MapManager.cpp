@@ -85,10 +85,10 @@ void MapManager::Draw() {
 bool MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
     bool hitOccurred = false;
     
-    int startCol = (int)(hitbox.x / TILE_SIZE);
-    int endCol = (int)((hitbox.x + hitbox.width) / TILE_SIZE);
-    int startRow = (int)(hitbox.y / TILE_SIZE);
-    int endRow = (int)((hitbox.y + hitbox.height) / TILE_SIZE);
+    int startCol = (int)floorf(hitbox.x / TILE_SIZE);
+    int endCol = (int)floorf((hitbox.x + hitbox.width) / TILE_SIZE);
+    int startRow = (int)floorf(hitbox.y / TILE_SIZE);
+    int endRow = (int)floorf((hitbox.y + hitbox.height) / TILE_SIZE);
 
     if (startCol < 0) startCol = 0;
     if (endCol >= MAP_COLS) endCol = MAP_COLS - 1;
@@ -138,10 +138,10 @@ bool MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
 }
 
 bool MapManager::CheckCollision(Rectangle hitbox) const {
-    int startCol = (int)(hitbox.x / TILE_SIZE);
-    int endCol = (int)((hitbox.x + hitbox.width) / TILE_SIZE);
-    int startRow = (int)(hitbox.y / TILE_SIZE);
-    int endRow = (int)((hitbox.y + hitbox.height) / TILE_SIZE);
+    int startCol = (int)floorf(hitbox.x / TILE_SIZE);
+    int endCol = (int)floorf((hitbox.x + hitbox.width) / TILE_SIZE);
+    int startRow = (int)floorf(hitbox.y / TILE_SIZE);
+    int endRow = (int)floorf((hitbox.y + hitbox.height) / TILE_SIZE);
 
     if (startCol < 0) startCol = 0;
     if (endCol >= MAP_COLS) endCol = MAP_COLS - 1;

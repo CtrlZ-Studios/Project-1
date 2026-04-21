@@ -201,7 +201,6 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
 
     if (position.x - 8 < 0) position.x = 8;
     if (position.x + 16 > WORLD_WIDTH) position.x = (float)WORLD_WIDTH - 16;
-    if (position.y < 0) position.y = 0;
     if (position.y > WORLD_HEIGHT - frameHeight) position.y = (float)WORLD_HEIGHT - frameHeight;
 
     // 6. State Determination
