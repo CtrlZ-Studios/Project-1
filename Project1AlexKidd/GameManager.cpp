@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include <algorithm>
+#include <iostream>
 
 GameManager::GameManager() {
     map = new MapManager();   // Map first, so spawn point is ready
@@ -222,7 +223,7 @@ void GameManager::Update() {
                 }
                 
                 droppedItems.push_back(item);
-                if (droppedItems.size() > 2) {
+                if (droppedItems.size() > 50) { 
                     droppedItems.erase(droppedItems.begin()); // Remove oldest
                 }
             }
@@ -268,8 +269,12 @@ void GameManager::Update() {
         if (droppedItems[i].pickupCooldown <= 0) {
             Rectangle itemHb = { droppedItems[i].position.x + 1, droppedItems[i].position.y, 14, 16 };
             if (CheckCollisionRecs(player->GetHitbox(), itemHb)) {
-                if (droppedItems[i].tileID == 3) playerMoney += 20;
-                if (droppedItems[i].tileID == 21) playerMoney += 10;
+                int amount = 0;
+                // Based on MapManager definitions: 3 is Big (+20), 21 is Small (+10)
+                if (droppedItems[i].tileID == 3) amount = 20;
+                if (droppedItems[i].tileID == 21) amount = 10;
+                playerMoney += amount;
+                std::cout << "Picked up " << amount << " money. Total: " << playerMoney << std::endl;
                 droppedItems.erase(droppedItems.begin() + i);
             }
         }
@@ -278,8 +283,14 @@ void GameManager::Update() {
     // Collectible interaction (always check body hitbox for static tiles)
     InteractionResult collectRes = map->InteractWithMap(player->GetHitbox(), 3);
     if (collectRes.tileID != 0) {
-        if (collectRes.tileID == 3) playerMoney += 20;
-        if (collectRes.tileID == 21) playerMoney += 10;
+        // Task: Map-Placed Money (Tiles 3, 21)
+        if (collectRes.tileID == 3 || collectRes.tileID == 21) {
+            // 3 is Big (+20), 21 is Small (+10)
+            int amount = (collectRes.tileID == 3) ? 20 : 10;
+            playerMoney += amount;
+            std::cout << "Picked up " << amount << " money from map. Total: " << playerMoney << std::endl;
+        }
+        
         // Onigiri (Tile 25) Advances to next level
         if (collectRes.tileID == 25) {
             int nextLevel = map->GetCurrentLevel() + 1;

@@ -6,8 +6,8 @@
 
 const int MAP_ROWS = 15;
 const int MAP_COLS = 79;
-const int MAP2_COLS = 288;
-const int MAX_MAP_COLS = 288;
+const int MAP2_COLS = 293;
+const int MAX_MAP_COLS = 293;
 const int TILE_SIZE = 16;
 const int WORLD_HEIGHT = MAP_ROWS * TILE_SIZE;
 
