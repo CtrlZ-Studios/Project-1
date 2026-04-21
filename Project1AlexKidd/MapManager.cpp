@@ -14,7 +14,7 @@ MapManager::MapManager() : tilesetLoaded(false), spawnPosition({100, 150}) {
                     (float)r * TILE_SIZE + TILE_SIZE - PlayerManager::frameHeight
                 };
                 mapData[r][c] = 0; // Clear the marker
-            } else if (mapData[r][c] == -2 || mapData[r][c] == -3) {
+            } else if (mapData[r][c] == -2 || mapData[r][c] == -3 || mapData[r][c] == -4 || mapData[r][c] == -5) {
                 enemySpawns.push_back({
                     mapData[r][c],
                     {(float)c * TILE_SIZE, (float)r * TILE_SIZE}
@@ -34,7 +34,7 @@ MapManager::~MapManager() {
     }
 }
 
-void MapManager::Draw() {
+void MapManager::DrawBackground() {
     Rectangle skySource = { 16, 16, 16, 16 }; // Row 2, Col 2 (1-indexed)
 
     for (int r = 0; r < MAP_ROWS; r++) {
@@ -47,7 +47,15 @@ void MapManager::Draw() {
             } else {
                 DrawRectangleV(pos, { (float)TILE_SIZE, (float)TILE_SIZE }, SKYBLUE);
             }
+        }
+    }
+}
 
+void MapManager::DrawTiles() {
+    for (int r = 0; r < MAP_ROWS; r++) {
+        for (int c = 0; c < MAP_COLS; c++) {
+            Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
+            
             // Draw specific tiles
             if (mapData[r][c] != 0 && mapData[r][c] != 12) {
                 if (tilesetLoaded) {
@@ -76,6 +84,7 @@ void MapManager::Draw() {
                         case 21: source = {0, 160, 16, 16}; break; // Small money block
                         case 22: source = {32, 48, 16, 16}; break; // Star block
                         case 23: source = {0, 64, 16, 16}; break; // Stun block
+                        case 24: source = {32, 144, 16, 16}; break; //Below Lava Block
                     }
                     DrawTextureRec(tileset, source, pos, WHITE);
                 }

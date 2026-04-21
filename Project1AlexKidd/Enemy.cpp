@@ -161,3 +161,75 @@ void Scorpion::Draw(bool showDebug) {
 Rectangle Scorpion::GetHitbox() const {
     return { position.x + 1, position.y, 14, 14 };
 }
+
+// --- Lava Implementation ---
+
+Lava::Lava(Vector2 pos) : Enemy(pos), animTimer(0), frame(0) {
+    texture = LoadTexture("Sprites/lava.png");
+}
+
+Lava::~Lava() {
+    UnloadTexture(texture);
+}
+
+void Lava::Update(float deltaTime, const MapManager& map) {
+    if (dead) return;
+
+    // Continuous animation
+    animTimer += deltaTime;
+    if (animTimer >= 0.15f) {
+        animTimer = 0;
+        frame = (frame + 1) % 4;
+    }
+}
+
+void Lava::Draw(bool showDebug) {
+    if (dead) return;
+
+    Rectangle source = { (float)frame * 16.0f, 0, 16.0f, 16.0f };
+    DrawTextureRec(texture, source, position, WHITE);
+
+    if (showDebug) {
+        DrawRectangleLinesEx(GetHitbox(), 1, RED);
+    }
+}
+
+Rectangle Lava::GetHitbox() const {
+    // 16x10, 6 pixels off the top
+    return { position.x, position.y + 6, 16, 10 };
+}
+
+// --- Plant Implementation ---
+
+Plant::Plant(Vector2 pos) : Enemy(pos), startPos(pos), moveTimer(0) {
+    texture = LoadTexture("Sprites/plant.png");
+}
+
+Plant::~Plant() {
+    UnloadTexture(texture);
+}
+
+void Plant::Update(float deltaTime, const MapManager& map) {
+    if (dead) return;
+
+    // Continuous up and down loop (48 pixels range)
+    moveTimer += deltaTime;
+    // Simple sine wave or triangle wave for smooth oscillation
+    // Using sine for smoothness: center is startPos.y - 24, amplitude 24
+    position.y = (startPos.y - 24.0f) + sinf(moveTimer * 2.0f) * 24.0f;
+}
+
+void Plant::Draw(bool showDebug) {
+    if (dead) return;
+
+    Rectangle source = { 0, 0, 16.0f, 32.0f };
+    DrawTextureRec(texture, source, position, WHITE);
+
+    if (showDebug) {
+        DrawRectangleLinesEx(GetHitbox(), 1, RED);
+    }
+}
+
+Rectangle Plant::GetHitbox() const {
+    return { position.x, position.y, 16, 32 };
+}

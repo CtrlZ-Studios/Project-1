@@ -42,6 +42,12 @@ void GameManager::SpawnEnemies() {
             enemies.push_back(new Bird(spawn.position));
         } else if (spawn.type == -3) {
             enemies.push_back(new Scorpion(spawn.position));
+        } else if (spawn.type == -4) {
+            enemies.push_back(new Lava(spawn.position));
+        } else if (spawn.type == -5) {
+            // Plant Spawn Offset: +8 X, +48 Y (total 3 blocks)
+            Vector2 plantPos = { spawn.position.x + 8.0f, spawn.position.y + 48.0f };
+            enemies.push_back(new Plant(plantPos));
         }
     }
 }
@@ -131,11 +137,13 @@ void GameManager::Update() {
     for (int i = (int)enemies.size() - 1; i >= 0; i--) {
         enemies[i]->Update(dt, *map);
         
-        // Collision: Player Punch vs Enemy
+        // Collision: Player Punch vs Enemy (Plant and Lava are invincible)
         if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
-            if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
-                enemies[i]->Die();
-                player->DeactivateAttackHitbox();
+            if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT) {
+                if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
+                    enemies[i]->Die();
+                    player->DeactivateAttackHitbox();
+                }
             }
         }
 
@@ -252,18 +260,39 @@ void GameManager::Update() {
 }
 
 void GameManager::Draw() {
-    map->Draw();
+    // 1. Sky Layer
+    map->DrawBackground();
+
+    // 2. Plant Enemies (Only the Plants)
     for (auto enemy : enemies) {
-        enemy->Draw(showDebugHitboxes);
+        if (enemy->GetType() == EnemyType::PLANT) {
+            enemy->Draw(showDebugHitboxes);
+        }
     }
+
+    // 3. Main Map Tiles & Lava (Lava is a non-moving enemy, but functionally a tile here)
+    // Actually, Lava is in the 'enemies' list. We need to draw it here.
+    for (auto enemy : enemies) {
+        if (enemy->GetType() == EnemyType::LAVA) {
+            enemy->Draw(showDebugHitboxes);
+        }
+    }
+    map->DrawTiles();
     
     // Draw Dropped Items
     for (const auto& item : droppedItems) {
         map->DrawTile(item.tileID, item.position);
     }
 
+    // 4. Player & Other Enemies (Bird, Scorpion)
+    for (auto enemy : enemies) {
+        if (enemy->GetType() == EnemyType::BIRD || enemy->GetType() == EnemyType::SCORPION) {
+            enemy->Draw(showDebugHitboxes);
+        }
+    }
+
     player->Draw(showDebugHitboxes);
     
-    // Task 1: Foreground Pass
+    // Foreground Pass (Tile 12 Tall Grass)
     map->DrawForeground();
 }
