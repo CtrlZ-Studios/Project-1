@@ -274,7 +274,7 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
 
     // Map Boundaries Check
     if (position.x - 8 < 0) position.x = 8;
-    if (position.x + 16 > WORLD_WIDTH) position.x = (float)WORLD_WIDTH - 16;
+    if (position.x + 16 > map.GetWorldWidth()) position.x = (float)map.GetWorldWidth() - 16;
     if (position.y > WORLD_HEIGHT - frameHeight) position.y = (float)WORLD_HEIGHT - frameHeight;
 
     // 6. State Determination
@@ -356,12 +356,26 @@ void PlayerManager::Draw(bool showDebug) {
     }
 
     if (showDebug) {
-        Rectangle debugBox = GetHitbox();
-        if (!isGrounded && state != PlayerState::STUNNED) {
-            debugBox.y += 2;
-            debugBox.height -= 2;
-        }
-        DrawRectangleRec(debugBox, { 0, 255, 0, 150 });
+        // DRAW ACCURATE CROSS HITBOX
+        
+        // 1. X-Axis Hitbox (The one that hits walls)
+        Rectangle xHb = GetHitbox();
+        xHb.y += 2.0f;
+        xHb.height -= 4.0f;
+        xHb.x += 0.5f;
+        xHb.width -= 1.0f;
+        DrawRectangleLinesEx(xHb, 1.0f, { 0, 255, 0, 200 }); // Green for X
+
+        // 2. Y-Axis Hitbox (The one that hits floors/ceilings)
+        Rectangle yHb = GetHitbox();
+        yHb.x += 2.0f;
+        yHb.width -= 4.0f;
+        bool wasGrounded = isGrounded; // Approximate or use actual state
+        int topOffset = (!wasGrounded) ? 2 : 0; 
+        yHb.y += (float)topOffset;
+        yHb.height -= (float)topOffset;
+        DrawRectangleLinesEx(yHb, 1.0f, { 0, 0, 255, 200 }); // Blue for Y
+
         if (state == PlayerState::ATTACKING && attackHitboxActive) {
             DrawRectangleRec(attackHitbox, { 255, 0, 0, 150 });
         }

@@ -54,16 +54,18 @@ void GameManager::SpawnEnemies() {
 
 void GameManager::RestartLevel() {
     delete player;
-    delete map;
     ClearEnemies();
-    map = new MapManager();
+    
+    // Reload the map data from template for the CURRENT level
+    map->LoadLevel(map->GetCurrentLevel());
+
     player = new PlayerManager(map->GetSpawnPosition());
     
     // Reset Camera
     camera.target = { player->GetPosition().x, 144.0f };
     maxCameraX = camera.target.x;
     
-    playerMoney = 0;
+    // Clear items for a fresh reload
     droppedItems.clear();
 
     SpawnEnemies();
@@ -83,7 +85,7 @@ void GameManager::UpdateCamera() {
 
     // Camera Clamping
     float minX = camera.offset.x;
-    float maxX = WORLD_WIDTH - camera.offset.x;
+    float maxX = map->GetWorldWidth() - camera.offset.x;
     
     if (camera.target.x < minX) camera.target.x = minX;
     if (camera.target.x > maxX) camera.target.x = maxX;
@@ -113,7 +115,21 @@ void GameManager::Update() {
         showDebugHitboxes = !showDebugHitboxes;
     }
 
+    // Task 2: Debug Keybinds
     if (IsKeyPressed(KEY_F2)) {
+        playerMoney = 0;
+        map->LoadLevel(1);
+        RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F3)) {
+        RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F4)) {
+        map->LoadLevel(1);
+        RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F5)) {
+        map->LoadLevel(2);
         RestartLevel();
     }
 
@@ -256,6 +272,14 @@ void GameManager::Update() {
     if (collectRes.tileID != 0) {
         if (collectRes.tileID == 3) playerMoney += 20;
         if (collectRes.tileID == 21) playerMoney += 10;
+        // Onigiri (Tile 25) Advances to next level
+        if (collectRes.tileID == 25) {
+            int nextLevel = map->GetCurrentLevel() + 1;
+            if (nextLevel > 2) nextLevel = 1;
+            map->LoadLevel(nextLevel);
+            RestartLevel();
+            return;
+        }
     }
 }
 

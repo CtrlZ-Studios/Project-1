@@ -43,7 +43,7 @@ void Bird::Draw(bool showDebug) {
     DrawTextureRec(texture, source, position, WHITE);
 
     if (showDebug) {
-        DrawRectangleLinesEx(GetHitbox(), 1, RED);
+        DrawRectangleLinesEx(GetHitbox(), 1, { 255, 0, 0, 200 }); // Red for enemy damage box
     }
 }
 
@@ -154,7 +154,7 @@ void Scorpion::Draw(bool showDebug) {
     DrawTextureRec(texture, source, position, WHITE);
 
     if (showDebug) {
-        DrawRectangleLinesEx(GetHitbox(), 1, RED);
+        DrawRectangleLinesEx(GetHitbox(), 1, { 255, 0, 0, 200 }); // Red for enemy damage box
     }
 }
 
@@ -190,7 +190,7 @@ void Lava::Draw(bool showDebug) {
     DrawTextureRec(texture, source, position, WHITE);
 
     if (showDebug) {
-        DrawRectangleLinesEx(GetHitbox(), 1, RED);
+        DrawRectangleLinesEx(GetHitbox(), 1, { 255, 0, 0, 200 }); // Red for enemy damage box
     }
 }
 
@@ -226,7 +226,7 @@ void Plant::Draw(bool showDebug) {
     DrawTextureRec(texture, source, position, WHITE);
 
     if (showDebug) {
-        DrawRectangleLinesEx(GetHitbox(), 1, RED);
+        DrawRectangleLinesEx(GetHitbox(), 1, { 255, 0, 0, 200 }); // Red for enemy damage box
     }
 }
 
