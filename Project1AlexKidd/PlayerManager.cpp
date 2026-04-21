@@ -14,6 +14,11 @@ PlayerManager::PlayerManager(Vector2 spawnPos) {
     attackHitboxActive = false;
     lastMoveKeyPressed = 0;
     
+    stunTimer = 0.0f;
+    pendingStun = false;
+    stunStartPosition = { 0, 0 };
+    stunWithPunchSprite = false;
+
     spriteSheet = LoadTexture("Sprites/alex.png");
     SetTextureFilter(spriteSheet, TEXTURE_FILTER_POINT);
     spriteLoaded = (spriteSheet.id != 0);
@@ -26,6 +31,18 @@ PlayerManager::PlayerManager(Vector2 spawnPos) {
 PlayerManager::~PlayerManager() {
     if (spriteLoaded) {
         UnloadTexture(spriteSheet);
+    }
+}
+
+void PlayerManager::TriggerStun() {
+    if (isGrounded) {
+        state = PlayerState::STUNNED;
+        stunTimer = 0.7f;
+        stunStartPosition = position;
+        stunWithPunchSprite = true;
+        velocity = { 0, 0 };
+    } else {
+        pendingStun = true;
     }
 }
 
@@ -48,6 +65,25 @@ Rectangle PlayerManager::GetHitbox() const {
 }
 
 void PlayerManager::Update(float deltaTime, const MapManager& map) {
+    // 0. Handle Stun Logic
+    if (state == PlayerState::STUNNED) {
+        stunTimer -= deltaTime;
+        
+        // Oscillate X coordinate rapidly (e.g., 30 times per second)
+        int frameOffset = ((int)(stunTimer * 30.0f)) % 2 == 0 ? 1 : -1;
+        position.x = stunStartPosition.x + frameOffset;
+
+        if (stunTimer <= 0) {
+            stunTimer = 0;
+            position.x = stunStartPosition.x;
+            state = PlayerState::IDLE;
+        } else {
+            // Lock movement and animation
+            currentFrame = stunWithPunchSprite ? 5 : 4;
+            return; // Skip normal update
+        }
+    }
+
     // 1. Handle Attack Timer
     if (attackTimer > 0) {
         attackTimer -= deltaTime;
@@ -169,9 +205,39 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     if (map.CheckCollision(yHitbox)) {
         if (velocity.y > 0) {
             isGrounded = true;
-            position.y = floorf((position.y + frameHeight) / TILE_SIZE) * TILE_SIZE - frameHeight;
+            int r = (int)floorf((yHitbox.y + yHitbox.height) / TILE_SIZE);
+            
+            // Check if we hit Tile 12 in the columns covered by the hitbox
+            bool hitTile12 = false;
+            int startCol = (int)floorf(yHitbox.x / TILE_SIZE);
+            int endCol = (int)floorf((yHitbox.x + yHitbox.width) / TILE_SIZE);
+            for (int c = startCol; c <= endCol; c++) {
+                if (map.GetTile(r, c) == 12) {
+                    hitTile12 = true;
+                    break;
+                }
+            }
+
+            if (hitTile12) {
+                position.y = (float)r * TILE_SIZE + 6 - frameHeight;
+            } else {
+                position.y = (float)r * TILE_SIZE - frameHeight;
+            }
+            
+            // Check for pending stun when landing
+            if (pendingStun) {
+                state = PlayerState::STUNNED;
+                stunTimer = 0.7f;
+                stunStartPosition = position;
+                stunWithPunchSprite = false;
+                velocity = { 0, 0 };
+                pendingStun = false;
+                // Since we just set state to STUNNED, we should return to avoid further processing
+                return;
+            }
         } else if (velocity.y < 0) {
-            position.y = floorf((position.y + topOffset) / TILE_SIZE) * TILE_SIZE + TILE_SIZE - topOffset;
+            int r = (int)floorf((yHitbox.y) / TILE_SIZE);
+            position.y = (float)r * TILE_SIZE + TILE_SIZE - topOffset;
         }
         velocity.y = 0;
     }
@@ -190,9 +256,37 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         stepUpHitbox.y -= 2.0f; 
         
         if (!map.CheckCollision(stepUpHitbox)) {
-            position.y = floorf((position.y + frameHeight) / TILE_SIZE) * TILE_SIZE - frameHeight;
+            // Re-apply grounding logic for step-up to handle Tile 12 correctly
+            int r = (int)floorf((position.y + frameHeight) / TILE_SIZE);
+            bool hitTile12 = false;
+            int startCol = (int)floorf(xHitbox.x / TILE_SIZE);
+            int endCol = (int)floorf((xHitbox.x + xHitbox.width) / TILE_SIZE);
+            for (int c = startCol; c <= endCol; c++) {
+                if (map.GetTile(r, c) == 12) {
+                    hitTile12 = true;
+                    break;
+                }
+            }
+
+            if (hitTile12) {
+                position.y = (float)r * TILE_SIZE + 6 - frameHeight;
+            } else {
+                position.y = (float)r * TILE_SIZE - frameHeight;
+            }
+
             isGrounded = true;
             velocity.y = 0;
+            
+            // Check for pending stun when landing via step-up
+            if (pendingStun) {
+                state = PlayerState::STUNNED;
+                stunTimer = 0.5f;
+                stunStartPosition = position;
+                stunWithPunchSprite = false;
+                velocity = { 0, 0 };
+                pendingStun = false;
+                return;
+            }
         } else {
             position.x -= velocity.x * deltaTime;
             velocity.x = 0;
@@ -231,6 +325,9 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         case PlayerState::ATTACKING:
             currentFrame = 5;
             break;
+        case PlayerState::STUNNED:
+            currentFrame = stunWithPunchSprite ? 5 : 4;
+            break;
         case PlayerState::CROUCHING:
         case PlayerState::BLOCKED_CROUCH:
             currentFrame = 7;
@@ -265,10 +362,13 @@ void PlayerManager::Draw(bool showDebug) {
             (float)(int)roundf(position.y) 
         };
         
+        // During stun, we used position.x for the oscillation.
+        // The draw logic uses position.x so it should be fine.
+        
         DrawTextureRec(spriteSheet, source, drawPos, WHITE);
     } else {
         Rectangle hb = GetHitbox();
-        if (!isGrounded) {
+        if (!isGrounded && state != PlayerState::STUNNED) {
             hb.y += 2;
             hb.height -= 2;
         }
@@ -277,7 +377,7 @@ void PlayerManager::Draw(bool showDebug) {
 
     if (showDebug) {
         Rectangle debugBox = GetHitbox();
-        if (!isGrounded) {
+        if (!isGrounded && state != PlayerState::STUNNED) {
             debugBox.y += 2;
             debugBox.height -= 2;
         }

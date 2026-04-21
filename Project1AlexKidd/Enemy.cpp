@@ -67,18 +67,27 @@ Scorpion::~Scorpion() {
 void Scorpion::Update(float deltaTime, const MapManager& map) {
     if (dead) return;
 
-    // Movement
+    const float gravity = 800.0f;
+    const float terminalVelocity = 350.0f;
+
+    // Apply Gravity
+    if (!isGrounded) {
+        velocity.y += gravity * deltaTime;
+        if (velocity.y > terminalVelocity) velocity.y = terminalVelocity;
+    }
+
+    // Horizontal Movement
     float moveX = (facingLeft ? -speed : speed) * deltaTime;
     position.x += moveX;
 
     bool shouldReverse = false;
 
-    // Wall collision
+    // Wall collision (Horizontal)
     if (map.CheckCollision(GetHitbox())) {
+        position.x -= moveX;
         shouldReverse = true;
     } else {
         // Edge detection
-        // Check a point slightly ahead and below
         float checkX = facingLeft ? position.x : position.x + 16;
         Rectangle edgeCheck = { checkX, position.y + 14 + 1, 1, 1 };
         if (!map.CheckCollision(edgeCheck)) {
@@ -87,8 +96,40 @@ void Scorpion::Update(float deltaTime, const MapManager& map) {
     }
 
     if (shouldReverse) {
-        position.x -= moveX;
         facingLeft = !facingLeft;
+    }
+
+    // Vertical Movement and Collision
+    position.y += velocity.y * deltaTime;
+    isGrounded = false;
+
+    Rectangle hb = GetHitbox();
+    if (map.CheckCollision(hb)) {
+        if (velocity.y > 0) {
+            isGrounded = true;
+            int r = (int)floorf((hb.y + hb.height) / TILE_SIZE);
+            
+            // Check for Tile 12 snap
+            bool hitTile12 = false;
+            int startCol = (int)floorf(hb.x / TILE_SIZE);
+            int endCol = (int)floorf((hb.x + hb.width) / TILE_SIZE);
+            for (int c = startCol; c <= endCol; c++) {
+                if (map.GetTile(r, c) == 12) {
+                    hitTile12 = true;
+                    break;
+                }
+            }
+
+            if (hitTile12) {
+                position.y = (float)r * TILE_SIZE + 6 - 14;
+            } else {
+                position.y = (float)r * TILE_SIZE - 14;
+            }
+        } else if (velocity.y < 0) {
+            int r = (int)floorf(hb.y / TILE_SIZE);
+            position.y = (float)r * TILE_SIZE + TILE_SIZE;
+        }
+        velocity.y = 0;
     }
 
     // Animation

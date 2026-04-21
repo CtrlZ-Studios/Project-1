@@ -15,6 +15,9 @@ GameManager::GameManager() {
     
     maxCameraX = camera.target.x;
     
+    playerMoney = 0;
+    droppedItems.clear();
+
     SpawnEnemies();
 }
 
@@ -54,6 +57,9 @@ void GameManager::RestartLevel() {
     camera.target = { player->GetPosition().x, 144.0f };
     maxCameraX = camera.target.x;
     
+    playerMoney = 0;
+    droppedItems.clear();
+
     SpawnEnemies();
 }
 
@@ -152,15 +158,97 @@ void GameManager::Update() {
         }
     }
 
-    // Map Interaction
+    // Map Interaction (Punch)
     if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
-        if (map->InteractWithMap(player->GetAttackHitbox(), 2)) { // 2 = Destructible
-            player->DeactivateAttackHitbox();
+        InteractionResult res = map->InteractWithMap(player->GetAttackHitbox(), 2);
+        if (res.tileID != 0) {
+            player->DeactivateAttackHitbox(); // FIX A: Deactivate immediately
+            
+            // Task 2: Star Block (Tile 22)
+            if (res.tileID == 22) {
+                int newMoneyType = (GetRandomValue(0, 1) == 0) ? 3 : 21; // 3 = Big, 21 = Small
+                
+                DroppedItem item;
+                item.tileID = newMoneyType;
+                item.position = { (float)res.col * TILE_SIZE, (float)res.row * TILE_SIZE };
+                
+                if (DYNAMIC_MONEY_DROPS) {
+                    // Check tile above for ceiling clipping
+                    bool ceilingSolid = false;
+                    int tileAbove = map->GetTile(res.row - 1, res.col);
+                    if ((tileAbove >= 1 && tileAbove <= 15) || (tileAbove >= 21 && tileAbove <= 23)) {
+                        ceilingSolid = true;
+                    }
+
+                    item.velocity = { 0, ceilingSolid ? 0.0f : -100.0f }; // Only pop if ceiling is clear
+                    item.pickupCooldown = 0.15f;
+                    item.isGrounded = false;
+                } else {
+                    item.velocity = { 0, 0 };
+                    item.pickupCooldown = 0.15f;
+                    item.isGrounded = true;    // Don't apply gravity
+                }
+                
+                droppedItems.push_back(item);
+                if (droppedItems.size() > 2) {
+                    droppedItems.erase(droppedItems.begin()); // Remove oldest
+                }
+            }
+            
+            // Task 3: Stun Block (Tile 23)
+            if (res.tileID == 23) {
+                player->TriggerStun();
+            }
         }
     }
     
-    // Collectible interaction (always check body hitbox)
-    map->InteractWithMap(player->GetHitbox(), 3); // 3 = Collectible
+    // Update Dropped Items
+    for (int i = (int)droppedItems.size() - 1; i >= 0; i--) {
+        droppedItems[i].pickupCooldown -= dt;
+        
+        if (!droppedItems[i].isGrounded) {
+            droppedItems[i].velocity.y += 400.0f * dt; // Gravity
+            droppedItems[i].position.y += droppedItems[i].velocity.y * dt;
+            
+            Rectangle itemHb = { droppedItems[i].position.x, droppedItems[i].position.y, 16, 16 };
+            if (map->CheckCollision(itemHb)) {
+                droppedItems[i].isGrounded = true;
+                droppedItems[i].velocity.y = 0;
+                // Snap to tile
+                int r = (int)floorf((itemHb.y + itemHb.height) / TILE_SIZE);
+                
+                // Tile 12 snap for items too
+                bool hitTile12 = false;
+                if (map->GetTile(r, (int)floorf(itemHb.x / TILE_SIZE)) == 12 || 
+                    map->GetTile(r, (int)floorf((itemHb.x + 15) / TILE_SIZE)) == 12) {
+                    hitTile12 = true;
+                }
+
+                if (hitTile12) {
+                    droppedItems[i].position.y = (float)r * TILE_SIZE + 6 - 16;
+                } else {
+                    droppedItems[i].position.y = (float)r * TILE_SIZE - 16;
+                }
+            }
+        }
+
+        // Collection check
+        if (droppedItems[i].pickupCooldown <= 0) {
+            Rectangle itemHb = { droppedItems[i].position.x + 1, droppedItems[i].position.y, 14, 16 };
+            if (CheckCollisionRecs(player->GetHitbox(), itemHb)) {
+                if (droppedItems[i].tileID == 3) playerMoney += 20;
+                if (droppedItems[i].tileID == 21) playerMoney += 10;
+                droppedItems.erase(droppedItems.begin() + i);
+            }
+        }
+    }
+
+    // Collectible interaction (always check body hitbox for static tiles)
+    InteractionResult collectRes = map->InteractWithMap(player->GetHitbox(), 3);
+    if (collectRes.tileID != 0) {
+        if (collectRes.tileID == 3) playerMoney += 20;
+        if (collectRes.tileID == 21) playerMoney += 10;
+    }
 }
 
 void GameManager::Draw() {
@@ -168,5 +256,14 @@ void GameManager::Draw() {
     for (auto enemy : enemies) {
         enemy->Draw(showDebugHitboxes);
     }
+    
+    // Draw Dropped Items
+    for (const auto& item : droppedItems) {
+        map->DrawTile(item.tileID, item.position);
+    }
+
     player->Draw(showDebugHitboxes);
+    
+    // Task 1: Foreground Pass
+    map->DrawForeground();
 }

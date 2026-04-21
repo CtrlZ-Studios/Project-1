@@ -9,7 +9,8 @@ enum class PlayerState {
     JUMPING,
     CROUCHING,
     ATTACKING,
-    BLOCKED_CROUCH
+    BLOCKED_CROUCH,
+    STUNNED
 };
 
 class MapManager; // Forward declaration
@@ -29,6 +30,8 @@ public:
     PlayerState GetState() const { return state; }
     bool IsAttackHitboxActive() const { return attackHitboxActive; }
     void DeactivateAttackHitbox() { attackHitboxActive = false; }
+    void TriggerStun();
+    bool IsGrounded() const { return isGrounded; }
 
     // Constants
     static const int frameWidth = 24;
@@ -56,6 +59,12 @@ private:
     float attackTimer;
     Rectangle attackHitbox;
     bool attackHitboxActive;
+
+    // Stun Variables
+    float stunTimer;
+    bool pendingStun;
+    Vector2 stunStartPosition;
+    bool stunWithPunchSprite;
 
     // Movement Constants
     const float maxMoveSpeed = 120.0f;

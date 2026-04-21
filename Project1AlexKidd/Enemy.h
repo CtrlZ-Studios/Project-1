@@ -8,7 +8,7 @@ class MapManager;
 
 class Enemy {
 public:
-    Enemy(Vector2 pos) : position(pos), dead(false) {}
+    Enemy(Vector2 pos) : position(pos), velocity({0,0}), isGrounded(false), dead(false) {}
     virtual ~Enemy() {}
     virtual void Update(float deltaTime, const MapManager& map) = 0;
     virtual void Draw(bool showDebug) = 0;
@@ -18,6 +18,8 @@ public:
 
 protected:
     Vector2 position;
+    Vector2 velocity;
+    bool isGrounded;
     bool dead;
 };
 

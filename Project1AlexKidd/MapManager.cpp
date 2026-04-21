@@ -49,7 +49,7 @@ void MapManager::Draw() {
             }
 
             // Draw specific tiles
-            if (mapData[r][c] != 0) {
+            if (mapData[r][c] != 0 && mapData[r][c] != 12) {
                 if (tilesetLoaded) {
                     Rectangle source = { 0, 0, 16, 16 }; 
                     
@@ -65,7 +65,6 @@ void MapManager::Draw() {
                         case 9: source = {32, 32, 16, 16}; break; // Right corner
                         case 10: source = {16, 32, 16, 16}; break; // Dirt
                         case 11: source = {16, 16, 16, 16}; break; // Barrier block
-                        case 12: source = {32, 128, 16, 16}; break; // Grass_2_top
                         case 13: source = {0, 144, 16, 16}; break; // Grass_2_block
                         case 14: source = {0, 128, 16, 16}; break; // Red Ball
                         case 15: source = {16, 128, 16, 16}; break; // Blue Ball
@@ -85,8 +84,54 @@ void MapManager::Draw() {
     }
 }
 
-bool MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
-    bool hitOccurred = false;
+void MapManager::DrawForeground() {
+    if (!tilesetLoaded) return;
+    Rectangle source = { 32, 128, 16, 16 }; // Grass_2_top (Tile 12)
+
+    for (int r = 0; r < MAP_ROWS; r++) {
+        for (int c = 0; c < MAP_COLS; c++) {
+            if (mapData[r][c] == 12) {
+                Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
+                DrawTextureRec(tileset, source, pos, WHITE);
+            }
+        }
+    }
+}
+
+void MapManager::DrawTile(int tileID, Vector2 position) {
+    if (!tilesetLoaded || tileID == 0) return;
+    
+    Rectangle source = { 0, 0, 16, 16 }; 
+    switch (tileID) {
+        case 1: source = { 16, 0, 16, 16 }; break;
+        case 2: source = {0, 48, 16, 16}; break;
+        case 3: source = {16, 48, 16, 16}; break;
+        case 4: source = {32, 16, 16, 16}; break;
+        case 5: source = {0, 16, 16, 16}; break;
+        case 6: source = {0, 0, 16, 16}; break;
+        case 7: source = {32, 0, 16, 16}; break;
+        case 8: source = {0, 32, 16, 16}; break;
+        case 9: source = {32, 32, 16, 16}; break;
+        case 10: source = {16, 32, 16, 16}; break;
+        case 11: source = {16, 16, 16, 16}; break;
+        case 12: source = {32, 128, 16, 16}; break;
+        case 13: source = {0, 144, 16, 16}; break;
+        case 14: source = {0, 128, 16, 16}; break;
+        case 15: source = {16, 128, 16, 16}; break;
+        case 16: source = {16, 160, 16, 16}; break;
+        case 17: source = {32, 160, 16, 16}; break;
+        case 18: source = {0, 176, 16, 16}; break;
+        case 19: source = {16, 176, 16, 16}; break;
+        case 20: source = {32, 176, 16, 16}; break;
+        case 21: source = {0, 160, 16, 16}; break;
+        case 22: source = {32, 48, 16, 16}; break;
+        case 23: source = {0, 64, 16, 16}; break;
+    }
+    DrawTextureRec(tileset, source, position, WHITE);
+}
+
+InteractionResult MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
+    InteractionResult result = { 0, -1, -1 };
     
     int startCol = (int)floorf(hitbox.x / TILE_SIZE);
     int endCol = (int)floorf((hitbox.x + hitbox.width) / TILE_SIZE);
@@ -120,24 +165,29 @@ bool MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
         }
 
         if (bestR != -1) {
+            result.tileID = mapData[bestR][bestC];
+            result.row = bestR;
+            result.col = bestC;
             mapData[bestR][bestC] = 0;
-            hitOccurred = true;
         }
     } else if (interactionType == 3) {
         for (int r = startRow; r <= endRow; r++) {
             for (int c = startCol; c <= endCol; c++) {
                 if (mapData[r][c] == 3 || mapData[r][c] == 21) {
-                    Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
+                    Rectangle tileRect = { (float)c * TILE_SIZE + 1, (float)r * TILE_SIZE, (float)TILE_SIZE - 2, (float)TILE_SIZE };
                     if (CheckCollisionRecs(hitbox, tileRect)) {
+                        result.tileID = mapData[r][c];
+                        result.row = r;
+                        result.col = c;
                         mapData[r][c] = 0;
-                        hitOccurred = true;
+                        return result; // Return immediately on first collectible hit
                     }
                 }
             }
         }
     }
     
-    return hitOccurred;
+    return result;
 }
 
 bool MapManager::CheckCollision(Rectangle hitbox) const {
@@ -154,7 +204,16 @@ bool MapManager::CheckCollision(Rectangle hitbox) const {
     for (int r = startRow; r <= endRow; r++) {
         for (int c = startCol; c <= endCol; c++) {
             if (mapData[r][c] >= 1 && mapData[r][c] <= 15 || mapData[r][c] >= 21 && mapData[r][c] <= 23) {
-                Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
+                float yPos = (float)r * TILE_SIZE;
+                float height = (float)TILE_SIZE;
+                
+                // Task 1: Custom Hitbox for Tile 12
+                if (mapData[r][c] == 12) {
+                    yPos += 6;
+                    height -= 6;
+                }
+                
+                Rectangle tileRect = { (float)c * TILE_SIZE, yPos, (float)TILE_SIZE, height };
                 if (CheckCollisionRecs(hitbox, tileRect)) {
                     return true;
                 }
