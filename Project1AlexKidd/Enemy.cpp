@@ -48,7 +48,7 @@ void Bird::Draw(bool showDebug) {
 }
 
 Rectangle Bird::GetHitbox() const {
-    return { position.x, position.y, 24, 16 };
+    return { position.x + 1, position.y, 22, 16 };
 }
 
 // --- Scorpion Implementation ---
@@ -83,14 +83,18 @@ void Scorpion::Update(float deltaTime, const MapManager& map) {
     bool shouldReverse = false;
 
     // Wall collision (Horizontal)
-    if (map.CheckCollision(GetHitbox())) {
+    Rectangle hbx = GetHitbox();
+    if (map.CheckCollision(hbx)) {
         position.x -= moveX;
         shouldReverse = true;
-    } else {
-        // Edge detection
-        float checkX = facingLeft ? position.x : position.x + 16;
-        Rectangle edgeCheck = { checkX, position.y + 14 + 1, 1, 1 };
+    } else if (isGrounded) {
+        // Predictive Edge Detection ("Feeler" Logic)
+        float feelerX = facingLeft ? hbx.x - 1.0f : hbx.x + hbx.width + 1.0f;
+        float feelerY = hbx.y + hbx.height + 1.0f;
+        Rectangle edgeCheck = { feelerX, feelerY, 1.0f, 1.0f };
+        
         if (!map.CheckCollision(edgeCheck)) {
+            position.x -= moveX; // Strictly prevent overhang
             shouldReverse = true;
         }
     }
@@ -155,5 +159,5 @@ void Scorpion::Draw(bool showDebug) {
 }
 
 Rectangle Scorpion::GetHitbox() const {
-    return { position.x, position.y, 16, 14 };
+    return { position.x + 1, position.y, 14, 14 };
 }
