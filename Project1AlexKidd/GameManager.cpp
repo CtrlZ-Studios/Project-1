@@ -48,6 +48,10 @@ void GameManager::SpawnEnemies() {
             // Plant Spawn Offset: +8 X, +48 Y (total 3 blocks)
             Vector2 plantPos = { spawn.position.x + 8.0f, spawn.position.y + 48.0f };
             enemies.push_back(new Plant(plantPos));
+        } else if (spawn.type == -6) {
+            enemies.push_back(new Quicksand(spawn.position));
+        } else if (spawn.type == -7) {
+            enemies.push_back(new Frog(spawn.position));
         }
     }
 }
@@ -153,9 +157,9 @@ void GameManager::Update() {
     for (int i = (int)enemies.size() - 1; i >= 0; i--) {
         enemies[i]->Update(dt, *map);
         
-        // Collision: Player Punch vs Enemy (Plant and Lava are invincible)
+        // Collision: Player Punch vs Enemy (Plant, Lava, and Quicksand are invincible)
         if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
-            if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT) {
+            if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT && enemies[i]->GetType() != EnemyType::QUICKSAND) {
                 if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
                     enemies[i]->Die();
                     player->DeactivateAttackHitbox();
@@ -294,10 +298,9 @@ void GameManager::Draw() {
         }
     }
 
-    // 3. Main Map Tiles & Lava (Lava is a non-moving enemy, but functionally a tile here)
-    // Actually, Lava is in the 'enemies' list. We need to draw it here.
+    // 3. Main Map Tiles, Lava, and Quicksand (Static hazards drawn behind player/foreground)
     for (auto enemy : enemies) {
-        if (enemy->GetType() == EnemyType::LAVA) {
+        if (enemy->GetType() == EnemyType::LAVA || enemy->GetType() == EnemyType::QUICKSAND) {
             enemy->Draw(showDebugHitboxes);
         }
     }
@@ -308,9 +311,9 @@ void GameManager::Draw() {
         map->DrawTile(item.tileID, item.position);
     }
 
-    // 4. Player & Other Enemies (Bird, Scorpion)
+    // 4. Player & Other Enemies (Bird, Scorpion, Frog)
     for (auto enemy : enemies) {
-        if (enemy->GetType() == EnemyType::BIRD || enemy->GetType() == EnemyType::SCORPION) {
+        if (enemy->GetType() == EnemyType::BIRD || enemy->GetType() == EnemyType::SCORPION || enemy->GetType() == EnemyType::FROG) {
             enemy->Draw(showDebugHitboxes);
         }
     }

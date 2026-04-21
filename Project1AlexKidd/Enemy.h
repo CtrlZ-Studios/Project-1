@@ -6,7 +6,7 @@
 
 class MapManager;
 
-enum class EnemyType { BIRD, SCORPION, LAVA, PLANT };
+enum class EnemyType { BIRD, SCORPION, LAVA, PLANT, QUICKSAND, FROG };
 
 class Enemy {
 public:
@@ -88,6 +88,37 @@ private:
     Texture2D texture;
     Vector2 startPos;
     float moveTimer;
+};
+
+class Quicksand : public Enemy {
+public:
+    Quicksand(Vector2 pos);
+    ~Quicksand();
+    void Update(float deltaTime, const MapManager& map) override;
+    void Draw(bool showDebug) override;
+    Rectangle GetHitbox() const override;
+    EnemyType GetType() const override { return EnemyType::QUICKSAND; }
+
+private:
+    Texture2D texture;
+    float animTimer;
+    int frame;
+};
+
+class Frog : public Enemy {
+public:
+    Frog(Vector2 pos);
+    ~Frog();
+    void Update(float deltaTime, const MapManager& map) override;
+    void Draw(bool showDebug) override;
+    Rectangle GetHitbox() const override;
+    EnemyType GetType() const override { return EnemyType::FROG; }
+
+private:
+    Texture2D texture;
+    float animTimer;
+    float cooldownTimer;
+    int frame;
 };
 
 #endif
