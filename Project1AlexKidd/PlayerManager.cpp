@@ -190,38 +190,46 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
         }
     }
 
-    // Y Movement and Collision
+    // --- Y Movement and Collision ---
+    bool wasGrounded = isGrounded;
     isGrounded = false;
     position.y += velocity.y * deltaTime;
     
     Rectangle yHitbox = GetHitbox();
-    yHitbox.x += 2;
-    yHitbox.width -= 4;
+    yHitbox.x += 2.0f;       // Shave sides to avoid wall catching
+    yHitbox.width -= 4.0f;
 
-    int topOffset = (state == PlayerState::JUMPING) ? 2 : 0; 
-    yHitbox.y += topOffset;
-    yHitbox.height -= topOffset;
+    int topOffset = (!wasGrounded) ? 2 : 0; 
+    yHitbox.y += (float)topOffset;
+    yHitbox.height -= (float)topOffset;
 
     if (map.CheckCollision(yHitbox)) {
-        if (velocity.y > 0) {
+        if (velocity.y > 0) { // Falling/Landing
             isGrounded = true;
             int r = (int)floorf((yHitbox.y + yHitbox.height) / TILE_SIZE);
             
-            // Check if we hit Tile 12 in the columns covered by the hitbox
             bool hitTile12 = false;
+            bool hitSolid = false;
             int startCol = (int)floorf(yHitbox.x / TILE_SIZE);
             int endCol = (int)floorf((yHitbox.x + yHitbox.width) / TILE_SIZE);
+            
+            // Check all columns the hitbox spans to prioritize solid blocks over tall grass
             for (int c = startCol; c <= endCol; c++) {
-                if (map.GetTile(r, c) == 12) {
+                int tileID = map.GetTile(r, c);
+                if (tileID == 12) {
                     hitTile12 = true;
-                    break;
+                } else if (tileID > 0) { // Assuming any other non-zero tile is solid
+                    hitSolid = true;
                 }
             }
 
-            if (hitTile12) {
+            // Normal solid tiles MUST win over the lowered grass tile, or you clip into the seams!
+            if (hitSolid) {
+                position.y = (float)r * TILE_SIZE - frameHeight;
+            } else if (hitTile12) {
                 position.y = (float)r * TILE_SIZE + 6 - frameHeight;
             } else {
-                position.y = (float)r * TILE_SIZE - frameHeight;
+                position.y = (float)r * TILE_SIZE - frameHeight; // Fallback
             }
             
             // Check for pending stun when landing
@@ -232,10 +240,9 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
                 stunWithPunchSprite = false;
                 velocity = { 0, 0 };
                 pendingStun = false;
-                // Since we just set state to STUNNED, we should return to avoid further processing
                 return;
             }
-        } else if (velocity.y < 0) {
+        } else if (velocity.y < 0) { // Hitting head on ceiling
             int r = (int)floorf((yHitbox.y) / TILE_SIZE);
             position.y = (float)r * TILE_SIZE + TILE_SIZE - topOffset;
         }
@@ -245,54 +252,27 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     // --- X Movement and Collision ---
     position.x += velocity.x * deltaTime;
     
-    // TASK 2: Fix Vertical Gap Clipping
-    // Use a slightly narrower hitbox for X checks to avoid catching on seams
     Rectangle xHitbox = GetHitbox();
+    // THE MAGIC FIX: Shave the top and bottom so horizontal checks don't scrape the floor or ceiling!
+    xHitbox.y += 2.0f;
+    xHitbox.height -= 4.0f;
+    
+    // Keep your slight side shaving
     xHitbox.x += 0.5f;
     xHitbox.width -= 1.0f;
 
     if (map.CheckCollision(xHitbox)) {
-        Rectangle stepUpHitbox = xHitbox;
-        stepUpHitbox.y -= 2.0f; 
-        
-        if (!map.CheckCollision(stepUpHitbox)) {
-            // Re-apply grounding logic for step-up to handle Tile 12 correctly
-            int r = (int)floorf((position.y + frameHeight) / TILE_SIZE);
-            bool hitTile12 = false;
-            int startCol = (int)floorf(xHitbox.x / TILE_SIZE);
-            int endCol = (int)floorf((xHitbox.x + xHitbox.width) / TILE_SIZE);
-            for (int c = startCol; c <= endCol; c++) {
-                if (map.GetTile(r, c) == 12) {
-                    hitTile12 = true;
-                    break;
-                }
-            }
-
-            if (hitTile12) {
-                position.y = (float)r * TILE_SIZE + 6 - frameHeight;
-            } else {
-                position.y = (float)r * TILE_SIZE - frameHeight;
-            }
-
-            isGrounded = true;
-            velocity.y = 0;
-            
-            // Check for pending stun when landing via step-up
-            if (pendingStun) {
-                state = PlayerState::STUNNED;
-                stunTimer = 0.5f;
-                stunStartPosition = position;
-                stunWithPunchSprite = false;
-                velocity = { 0, 0 };
-                pendingStun = false;
-                return;
-            }
-        } else {
-            position.x -= velocity.x * deltaTime;
-            velocity.x = 0;
+        if (velocity.x > 0) { // Moving Right
+            int tileCol = (int)floorf((xHitbox.x + xHitbox.width) / TILE_SIZE);
+            position.x = (float)tileCol * TILE_SIZE - 5.0f;
+        } else if (velocity.x < 0) { // Moving Left
+            int tileCol = (int)floorf(xHitbox.x / TILE_SIZE);
+            position.x = (float)tileCol * TILE_SIZE + TILE_SIZE + 5.0f;
         }
+        velocity.x = 0;
     }
 
+    // Map Boundaries Check
     if (position.x - 8 < 0) position.x = 8;
     if (position.x + 16 > WORLD_WIDTH) position.x = (float)WORLD_WIDTH - 16;
     if (position.y > WORLD_HEIGHT - frameHeight) position.y = (float)WORLD_HEIGHT - frameHeight;
