@@ -56,7 +56,7 @@ void MapManager::Draw() {
                     switch (mapData[r][c]) {
                         case 1: source = { 16, 0, 16, 16 }; break;  // Grass block
                         case 2: source = {0, 48, 16, 16}; break; // Destructible block
-                        case 3: source = {16, 48, 16, 16}; break; // Collectible block
+                        case 3: source = {16, 48, 16, 16}; break; // Big money block
                         case 4: source = {32, 16, 16, 16}; break; // Left wall
                         case 5: source = {0, 16, 16, 16}; break; // Right wall
                         case 6: source = {0, 0, 16, 16}; break; // Left corner grassy
@@ -74,6 +74,9 @@ void MapManager::Draw() {
                         case 18: source = {0, 176, 16, 16}; break; // Trunk of the tree
                         case 19: source = {16, 176, 16, 16}; break; // Leaves of the tree
                         case 20: source = {32, 176, 16, 16}; break; // Top of the tree
+                        case 21: source = {0, 160, 16, 16}; break; // Small money block
+                        case 22: source = {32, 48, 16, 16}; break; // Star block
+                        case 23: source = {0, 64, 16, 16}; break; // Stun block
                     }
                     DrawTextureRec(tileset, source, pos, WHITE);
                 }
@@ -102,7 +105,7 @@ bool MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
 
         for (int r = startRow; r <= endRow; r++) {
             for (int c = startCol; c <= endCol; c++) {
-                if (mapData[r][c] == 2 || mapData[r][c] == 15) {
+                if (mapData[r][c] == 2 || mapData[r][c] == 15 || mapData[r][c] == 22 || mapData[r][c] == 23) {
                     Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
                     Rectangle overlap = GetCollisionRec(hitbox, tileRect);
                     float area = overlap.width * overlap.height;
@@ -123,7 +126,7 @@ bool MapManager::InteractWithMap(Rectangle hitbox, int interactionType) {
     } else if (interactionType == 3) {
         for (int r = startRow; r <= endRow; r++) {
             for (int c = startCol; c <= endCol; c++) {
-                if (mapData[r][c] == 3) {
+                if (mapData[r][c] == 3 || mapData[r][c] == 21) {
                     Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
                     if (CheckCollisionRecs(hitbox, tileRect)) {
                         mapData[r][c] = 0;
@@ -150,7 +153,7 @@ bool MapManager::CheckCollision(Rectangle hitbox) const {
 
     for (int r = startRow; r <= endRow; r++) {
         for (int c = startCol; c <= endCol; c++) {
-            if (mapData[r][c] >= 1 && mapData[r][c] <= 15) {
+            if (mapData[r][c] >= 1 && mapData[r][c] <= 15 || mapData[r][c] >= 21 && mapData[r][c] <= 23) {
                 Rectangle tileRect = { (float)c * TILE_SIZE, (float)r * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE };
                 if (CheckCollisionRecs(hitbox, tileRect)) {
                     return true;
