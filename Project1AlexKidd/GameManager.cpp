@@ -52,6 +52,10 @@ void GameManager::SpawnEnemies() {
             enemies.push_back(new Quicksand(spawn.position));
         } else if (spawn.type == -7) {
             enemies.push_back(new Frog(spawn.position));
+        } else if (spawn.type == -8) {
+            // Frog with 0.5 block (8px) offset to the right
+            Vector2 frogPos = { spawn.position.x + 8.0f, spawn.position.y };
+            enemies.push_back(new Frog(frogPos));
         }
     }
 }
