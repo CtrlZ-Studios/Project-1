@@ -71,6 +71,9 @@ void MapManager::Draw() {
                         case 15: source = {16, 128, 16, 16}; break; // Blue Ball
                         case 16: source = {16, 160, 16, 16}; break; // Left side of cloud
                         case 17: source = {32, 160, 16, 16}; break; // Right side of cloud
+                        case 18: source = {0, 176, 16, 16}; break; // Trunk of the tree
+                        case 19: source = {16, 176, 16, 16}; break; // Leaves of the tree
+                        case 20: source = {32, 176, 16, 16}; break; // Top of the tree
                     }
                     DrawTextureRec(tileset, source, pos, WHITE);
                 }
