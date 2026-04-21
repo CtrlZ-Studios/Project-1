@@ -213,12 +213,12 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
             int startCol = (int)floorf(yHitbox.x / TILE_SIZE);
             int endCol = (int)floorf((yHitbox.x + yHitbox.width) / TILE_SIZE);
             
-            // Check all columns the hitbox spans to prioritize solid blocks over tall grass
+            // Check all columns the hitbox spans to prioritize solid blocks over tall grass/low tiles
             for (int c = startCol; c <= endCol; c++) {
-                int tileID = map.GetTile(r, c);
-                if (tileID == 12) {
+                int tid = map.GetTile(r, c);
+                if (tid == 12 || tid == 27) {
                     hitTile12 = true;
-                } else if (tileID > 0) { // Assuming any other non-zero tile is solid
+                } else if ((tid >= 1 && tid <= 15 && tid != 3) || (tid >= 21 && tid <= 24 && tid != 21)) {
                     hitSolid = true;
                 }
             }

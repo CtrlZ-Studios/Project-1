@@ -15,12 +15,12 @@ static const int LEVEL_1_DATA[MAP_ROWS][MAP_COLS] = {
     {0 , 0 , 0 , 0 , 0 ,22 , 0 , 0 , 0 , 0 , 0 , 0 ,16 ,17 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 15, 15, 0 ,16 ,17 , 0 , 0 , 0 , 0 , 0 , 14, 0 , 15, 0 , 15, 15, 0 , 0 , 0 ,16 ,17 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,16 ,17 , 0 , 0 , 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,16 ,17 , 0 , 0 , 0 , 0} ,
     {0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 14, 0 , 0 , 0 , 0 , 0 , 15, 0 , 0 , 0 , 15, 15, 0 , 0 , 0 , 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 ,20 ,22 , 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,20 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,16 ,17 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,20 , 0 , 0} ,
     {0 ,20 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,23 ,22 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,19 , 15, 15, 0 , 0 , 0 , 0 , 0 , 0 , 14,20 , 0 , 0 ,19 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,19 , 0 , 0} ,
-    {0 ,19 ,20 , 0 , 0 , 0 , 0 , 0 , 0 ,20 , 0 , 0 , 0 , 0 , 0 , 15,22 , 0 , 0 , 0 , 0 , 14, 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,20 , 0 , 0 ,19 , 14, 15, 0 , 0 , 0 , 15,22 , 0 , 15,19 , 0 , 15,19 , 0 , 15,20 , 0 , 0 , 0 , 0 , 0 , 0 , 14, 14, 14, 14, 14, 14, 14,20 , 0 ,20 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,19 , 0 , 0} ,
-    {0 ,19 ,19 , 0 , 0 , 0 , 0 , 0 , 0 ,19 , 0 , 15, 15, 0 ,20 , 15,22 , 0 , 0 , 15, 0 , 15, 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 14,19 , 0 , 0 ,19 , 15, 15, 0 , 0 , 0 , 15,22 , 0 , 0 ,19 , 0 , 14,19 , 0 , 0 ,19 , 0 , 0 , 0 , 0 , 0 , 0 , 15, 15, 15, 15, 15, 15, 15,19 ,20 ,19 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,19 ,20 , 0} ,
-    {0 ,19 ,19 , 0 , 0 , 0 , 0 , 15, 15,19 , 0 , 15, 15, 0 ,19 , 15, 14, 0 , 0 , 15, 0 , 0 , 0 , 0 , 15, 0 , 0 , 0 , 0 , 0 ,20 ,19 , 0 , 15,18 , 15,23 , 0 , 15, 0 , 15, 15, 0 , 0 ,19 , 0 , 0 ,18 , 0 , 0 ,19 , 14, 0 , 0 , 0 , 0 , 15, 15, 0 , 0 ,-2 , 0 , 0 , 15,19 ,19 ,19 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,25 ,18 ,19 , 0} ,
-    {0 ,18 ,18 , 15, 15, 0 , 0 , 15,23 ,18 , 0 ,23 , 14, 0 ,19 , 15,23 , 0 ,23 , 14, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,19 ,18 , 0 , 14,18 , 15, 14, 0 , 0 , 0 , 0 , 0 , 0 , 0 ,18 , 0 , 0 ,18 , 0 , 0 ,18 , 0 , 0 , 0 , 0 , 15, 15, 15, 0 ,22 ,22 ,22 , 0 , 14,18 ,19 ,18 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,18 ,19 , 0} ,
-    {-9,18 ,18 , 15, 15, 0 , 0 , 15, 15,18 , 0 , 15, 14, 0 ,18 , 14, 15, 0 , 0 , 15, 0 , 0 , 0 , 0 , 0 ,-5 , 0 , 0 , 0 , 0 ,18 ,18 , 0 , 0 ,18 , 15, 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 ,18 , 0 , 0 ,18 , 0 , 0 ,18 ,-3 , 0 , 0 , 15, 15, 15, 14, 0 , 0 , 0 , 0 , 0 , 14,18 ,18 ,18 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,18 ,18 , 0} ,
-    {12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,-4 ,-4 ,-4 ,-4 ,12 , 12, 12, 12, 12, 12, 12, 12, 12,-4 ,-4 ,-4 ,-4 , 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,12} ,
+    {0 ,19 ,20 , 0 , 0 , 0 , 0 , 0 , 0 ,20 , 0 , 0 , 0 , 0 , 0 , 15,22 , 0 , 0 , 0 , 0 , 14, 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,20 , 0 , 0 ,19 , 14, 15, 0 , 0 , 0 , 15,22 , 0 , 15,19 , 0 , 15,19 , 0 , 15,20 , 0 , 0 , 0 , 0 , 0 , 0 , 14, 14, 14, 14, 14, 14, 14,20 , 0 ,20 , 0 , 0 , 0 , 0 , 0 ,38 , 0 , 0 , 0 ,19 , 0 , 0} ,
+    {0 ,19 ,19 , 0 , 0 , 0 , 0 , 0 , 0 ,19 , 0 , 15, 15, 0 ,20 , 15,22 , 0 , 0 , 15, 0 , 15, 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 14,19 , 0 , 0 ,19 , 15, 15, 0 , 0 , 0 , 15,22 , 0 , 0 ,19 , 0 , 14,19 , 0 , 0 ,19 , 0 , 0 , 0 , 0 , 0 , 0 , 15, 15, 15, 15, 15, 15, 15,19 ,20 ,19 , 0 , 0 , 0 , 0 ,28 , 0 , 0 ,29 , 0 ,19 ,20 , 0} ,
+    {0 ,19 ,19 , 0 , 0 , 0 , 0 , 15, 15,19 , 0 , 15, 15, 0 ,19 , 15, 14, 0 , 0 , 15, 0 , 0 , 0 , 0 , 15, 0 , 0 , 0 , 0 , 0 ,20 ,19 , 0 , 15,18 , 15,23 , 0 , 15, 0 , 15, 15, 0 , 0 ,19 , 0 , 0 ,18 , 0 , 0 ,19 , 14, 0 , 0 , 0 , 0 , 15, 15, 0 , 0 ,-2 , 0 , 0 , 15,19 ,19 ,19 , 0 , 0 , 0 , 0 ,30 ,32 ,33 ,31 ,25 ,18 ,19 , 0} ,
+    {0 ,18 ,18 , 15, 15, 0 , 0 , 15,23 ,18 , 0 ,23 , 14, 0 ,19 , 15,23 , 0 ,23 , 14, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,19 ,18 , 0 , 14,18 , 15, 14, 0 , 0 , 0 , 0 , 0 , 0 , 0 ,18 , 0 , 0 ,18 , 0 , 0 ,18 , 0 , 0 , 0 , 0 , 15, 15, 15, 0 ,22 ,22 ,22 , 0 , 14,18 ,19 ,18 , 0 , 0 , 0 , 0 ,30 ,34 ,35 ,31 , 0 ,18 ,19 , 0} ,
+    {0 ,18 ,18 , 15, 15, 0 , 0 , 15, 15,18 , 0 , 15, 14, 0 ,18 , 14, 15, 0 , 0 , 15, 0 , 0 , 0 , 0 , 0 ,-5 , 0 , 0 , 0 , 0 ,18 ,18 , 0 , 0 ,18 , 15, 15, 0 , 0 , 0 , 0 , 0 , 0 , 0 ,18 , 0 , 0 ,18 , 0 , 0 ,18 ,-3 , 0 , 0 , 15, 15, 15, 14, 0 , 0 , 0 , 0 , 0 , 14,18 ,18 ,18 , 0 ,-1 , 0 , 0 ,30 ,36 ,37 ,31 , 0 ,18 ,18 , 0} ,
+    {12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,-4 ,-4 ,-4 ,-4 ,12 , 12, 12, 12, 12, 12, 12, 12, 12,-4 ,-4 ,-4 ,-4 , 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 27, 27, 27, 27, 12, 12, 12,12} ,
     {13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,24 ,24 ,24 ,24 ,13 , 13, 13, 13, 13, 13, 13, 13, 13,24 ,24 ,24 ,24 , 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,13}
 };
 
@@ -121,8 +121,8 @@ void MapManager::DrawTiles() {
         for (int c = 0; c < currentCols; c++) {
             Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
             
-            // Draw specific tiles
-            if (mapData[r][c] != 0 && mapData[r][c] != 12) {
+            // Draw specific tiles (Skip 12 and 27, they are foreground)
+            if (mapData[r][c] != 0 && mapData[r][c] != 12 && mapData[r][c] != 27) {
                 DrawTile(mapData[r][c], pos);
             }
         }
@@ -131,13 +131,15 @@ void MapManager::DrawTiles() {
 
 void MapManager::DrawForeground() {
     if (!tilesetLoaded) return;
-    Rectangle source = { 32, 128, 16, 16 }; // Grass_2_top (Tile 12)
+    Rectangle source12 = { 32, 128, 16, 16 }; // Grass_2_top (Tile 12)
+    Rectangle source27 = { 32, 192, 16, 16 }; // Castle's grass tile (Tile 27)
 
     for (int r = 0; r < MAP_ROWS; r++) {
         for (int c = 0; c < currentCols; c++) {
-            if (mapData[r][c] == 12) {
+            if (mapData[r][c] == 12 || mapData[r][c] == 27) {
+                Rectangle currentSource = (mapData[r][c] == 12) ? source12 : source27;
                 Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
-                DrawTextureRec(tileset, source, pos, WHITE);
+                DrawTextureRec(tileset, currentSource, pos, WHITE);
             }
         }
     }
@@ -146,6 +148,11 @@ void MapManager::DrawForeground() {
 void MapManager::DrawTile(int tileID, Vector2 position) {
     if (!tilesetLoaded || tileID == 0) return;
     
+    // Task 3: Tile 38 Rendering Offset (-8 pixels Y)
+    if (tileID == 38) {
+        position.y -= 8;
+    }
+
     Rectangle source = { 0, 0, 16, 16 }; 
     switch (tileID) {
         case 1: source = { 32, 112, 16, 16 }; break; // Rock block
@@ -174,6 +181,18 @@ void MapManager::DrawTile(int tileID, Vector2 position) {
         case 24: source = {32, 144, 16, 16}; break; // Lava block
         case 25: source = {16, 192, 16, 16}; break; // Onigiri tile
         case 26: source = {0, 192, 16, 16}; break; // Quicksand tile
+        case 27: source = {32, 192, 16, 16}; break; // Castle's grass tile
+        case 28: source = {0, 208, 16, 16}; break; // Castle's left corner tile
+        case 29: source = {16, 208, 16, 16}; break; // Castle's right corner tile
+        case 30: source = {0, 224, 16, 16}; break; // Castle's left wall tile
+        case 31: source = {16, 224, 16, 16}; break; // Castle's right wall tile
+        case 32: source = {0, 240, 16, 16}; break; // Castle's door's left corner tile
+        case 33: source = {16, 240, 16, 16}; break; // Castle's door's right corner tile
+        case 34: source = {0, 256, 16, 16}; break; // Castle's left door tile
+        case 35: source = {16, 256, 16, 16}; break; // Castle's right door tile
+        case 36: source = {0, 272, 16, 16}; break; // Castle's left old man tile
+        case 37: source = {16, 272, 16, 16}; break; // Castle's right old man tile
+        case 38: source = {0, 288, 32, 40}; break; // Castle's top piece
     }
     DrawTextureRec(tileset, source, position, WHITE);
 }
@@ -252,15 +271,16 @@ bool MapManager::CheckCollision(Rectangle hitbox) const {
     for (int r = startRow; r <= endRow; r++) {
         for (int c = startCol; c <= endCol; c++) {
             int tid = mapData[r][c];
-            // Check solid tiles (Excluding 3 and 21 which are collectibles)
-            bool isSolid = (tid >= 1 && tid <= 15 && tid != 3) || (tid >= 21 && tid <= 24 && tid != 21);
+            // Check solid tiles (Excluding 3 and 21 which are collectibles, and decorative tiles 28-38)
+            // Added 27 to solid tiles
+            bool isSolid = (tid >= 1 && tid <= 15 && tid != 3) || (tid >= 21 && tid <= 24 && tid != 21) || (tid == 27);
             
             if (isSolid) {
                 float yPos = (float)r * TILE_SIZE;
                 float height = (float)TILE_SIZE;
                 
-                // Custom Hitbox for Tile 12 (Tall Grass)
-                if (tid == 12) {
+                // Custom Hitbox for Tile 12 (Tall Grass) and Tile 27 (Castle's Grass)
+                if (tid == 12 || tid == 27) {
                     yPos += 6;
                     height -= 6;
                 }

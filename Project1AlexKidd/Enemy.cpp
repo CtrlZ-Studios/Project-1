@@ -113,18 +113,23 @@ void Scorpion::Update(float deltaTime, const MapManager& map) {
             isGrounded = true;
             int r = (int)floorf((hb.y + hb.height) / TILE_SIZE);
             
-            // Check for Tile 12 snap
+            // Check all columns for priority: solid blocks win over tall grass/low tiles
             bool hitTile12 = false;
+            bool hitSolid = false;
             int startCol = (int)floorf(hb.x / TILE_SIZE);
             int endCol = (int)floorf((hb.x + hb.width) / TILE_SIZE);
             for (int c = startCol; c <= endCol; c++) {
-                if (map.GetTile(r, c) == 12) {
+                int tid = map.GetTile(r, c);
+                if (tid == 12 || tid == 27) {
                     hitTile12 = true;
-                    break;
+                } else if ((tid >= 1 && tid <= 15 && tid != 3) || (tid >= 21 && tid <= 24 && tid != 21)) {
+                    hitSolid = true;
                 }
             }
 
-            if (hitTile12) {
+            if (hitSolid) {
+                position.y = (float)r * TILE_SIZE - 14;
+            } else if (hitTile12) {
                 position.y = (float)r * TILE_SIZE + 6 - 14;
             } else {
                 position.y = (float)r * TILE_SIZE - 14;
@@ -320,17 +325,21 @@ void Frog::Update(float deltaTime, const MapManager& map) {
             isGrounded = true;
             int r = (int)floorf((hb.y + hb.height) / TILE_SIZE);
             
+            // Check all columns for priority: solid blocks win over tall grass/low tiles
             bool hitTile12 = false;
+            bool hitSolid = false;
             int startCol = (int)floorf(hb.x / TILE_SIZE);
             int endCol = (int)floorf((hb.x + hb.width) / TILE_SIZE);
             for (int c = startCol; c <= endCol; c++) {
-                if (map.GetTile(r, c) == 12) {
+                int tid = map.GetTile(r, c);
+                if (tid == 12 || tid == 27) {
                     hitTile12 = true;
-                    break;
+                } else if ((tid >= 1 && tid <= 15 && tid != 3) || (tid >= 21 && tid <= 24 && tid != 21)) {
+                    hitSolid = true;
                 }
             }
             
-            float snapY = hitTile12 ? ((float)r * TILE_SIZE + 6) : ((float)r * TILE_SIZE);
+            float snapY = (hitTile12 && !hitSolid) ? ((float)r * TILE_SIZE + 6) : ((float)r * TILE_SIZE);
             position.y = snapY - 24.0f;
             velocity.y = 0;
             frame = 0;
