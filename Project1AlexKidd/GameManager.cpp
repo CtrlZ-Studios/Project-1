@@ -376,6 +376,7 @@ void GameManager::Update() {
             score += 100;
             std::cout << "Picked up " << amount << " money from map. Total: " << playerMoney << std::endl;
             std::cout << "You gained 100 points by collecting money! Total points: " << score << std::endl;
+            if (sound) sound->PlayCoin();
         }
         
         // Onigiri (Tile 25) Advances to next level
