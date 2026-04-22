@@ -86,6 +86,7 @@ void GameManager::PlayerDied() {
     lives--;
     std::cout << "Lost a life! " << lives << " remaining." << std::endl;
     player->TriggerDeath();
+    if (sound) sound->PlayPlayerDeath();
 }
 
 void GameManager::UpdateCamera() {
@@ -186,7 +187,7 @@ void GameManager::Update() {
     sound->Update();
     
     // Update Player with Map collision
-    player->Update(dt, *map);
+    player->Update(dt, *map, sound);
     
     // Check for falling off map (Y > WORLD_HEIGHT)
     if (player->GetPosition().y > 192) { // 192 is the screen/world height based on camera logic
@@ -215,6 +216,7 @@ void GameManager::Update() {
                     score += 200; 
                     std::cout << "You gained 200 points by killing an enemy! Total points: " << score << std::endl;
                     enemies[i]->Die();
+                    if (sound) sound->PlayEnemyDeath();
                     player->DeactivateAttackHitbox();
                 }
             }
@@ -335,6 +337,7 @@ void GameManager::Update() {
                 score += 100;
                 std::cout << "Picked up " << amount << " money. Total: " << playerMoney << std::endl;
                 std::cout << "You gained 100 points by collecting money! Total points: " << score << std::endl;
+                if (sound) sound->PlayCoin();
                 droppedItems.erase(droppedItems.begin() + i);
             }
         }

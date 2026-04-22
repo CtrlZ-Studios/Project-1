@@ -20,6 +20,10 @@ int main() {
     
     SetWindowMinSize(virtualWidth, virtualHeight);
 
+    // Initialize Audio here instead of SoundManager constructor!
+    InitAudioDevice();
+    SetMasterVolume(1.0f);
+
     GameManager game;
     
     // Create a render texture for virtual resolution
@@ -68,6 +72,7 @@ int main() {
     }
 
     UnloadRenderTexture(target);
+    CloseAudioDevice(); // Clean up audio device here
     CloseWindow();
 
     return 0;

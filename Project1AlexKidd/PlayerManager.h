@@ -2,6 +2,7 @@
 #define PLAYER_MANAGER_H
 
 #include "raylib.h"
+#include "SoundManager.h"
 
 enum class PlayerState {
     IDLE,
@@ -22,7 +23,7 @@ public:
     PlayerManager(Vector2 spawnPos = {100, 150});
     ~PlayerManager();
 
-    void Update(float deltaTime, const MapManager& map);
+    void Update(float deltaTime, const MapManager& map, SoundManager* sound);
     void Draw(bool showDebug = false);
     Vector2& GetPosition();
     Vector2 GetPosition() const;
