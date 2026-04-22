@@ -86,7 +86,10 @@ void GameManager::PlayerDied() {
     lives--;
     std::cout << "Lost a life! " << lives << " remaining." << std::endl;
     player->TriggerDeath();
-    if (sound) sound->PlayPlayerDeath();
+    if (sound) {
+        sound->StopTheme();
+        sound->PlayPlayerDeath();
+    }
 }
 
 void GameManager::UpdateCamera() {
@@ -127,11 +130,21 @@ void GameManager::CullOffscreen() {
 
 void GameManager::Update() {
     if (isGameOver) {
+        if (!gameOverSoundPlayed) {
+            if (sound) {
+                sound->StopTheme();
+                sound->PlayGameOver();
+            }
+            gameOverSoundPlayed = true;
+        }
+
         if (IsKeyPressed(KEY_SPACE)) {
             lives = 3;
             score = 0;
             playerMoney = 0;
             isGameOver = false;
+            gameOverSoundPlayed = false;
+            if (sound) sound->PlayTheme();
             // Hard Reset / Load Level 1 (F2 logic)
             map->LoadLevel(1);
             RestartLevel();
@@ -151,6 +164,7 @@ void GameManager::Update() {
                 float leftEdgeX = camera.target.x - (256.0f / 2.0f);
                 Vector2 newPos = map->GetSafeRespawnPosition(leftEdgeX, enemies);
                 player->TriggerRespawn(newPos);
+                if (sound) sound->PlayTheme();
             }
         }
     }
@@ -257,6 +271,13 @@ void GameManager::Update() {
         if (res.tileID != 0) {
             player->DeactivateAttackHitbox(); // FIX A: Deactivate immediately
             
+            // Play appropriate sound
+            if (res.tileID == 22) {
+                if (sound) sound->PlayStarBlockBreak();
+            } else {
+                if (sound) sound->PlayBlockBreak();
+            }
+
             // Task 2: Star Block (Tile 22)
             if (res.tileID == 22) {
                 int newMoneyType = (GetRandomValue(0, 1) == 0) ? 3 : 21; // 3 = Big, 21 = Small
@@ -290,6 +311,7 @@ void GameManager::Update() {
             
             // Task 3: Stun Block (Tile 23)
             if (res.tileID == 23) {
+                if (sound) sound->PlayStarBlockBreak();
                 player->TriggerStun();
             }
         }

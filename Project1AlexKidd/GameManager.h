@@ -55,6 +55,7 @@ private:
     int lives = 3;
     int score = 0;
     bool isGameOver = false;
+    bool gameOverSoundPlayed = false;
 };
 
 #endif // GAME_MANAGER_H
