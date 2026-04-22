@@ -30,14 +30,16 @@ GameManager::~GameManager() {
     ClearEnemies();
 }
 
-void GameManager::ClearEnemies() {
+void GameManager::ClearEnemies(bool returningFromShop) {
+    if (returningFromShop || map->GetCurrentLevel() == 3) return;
     for (auto enemy : enemies) {
         delete enemy;
     }
     enemies.clear();
 }
 
-void GameManager::SpawnEnemies() {
+void GameManager::SpawnEnemies(bool returningFromShop) {
+    if (returningFromShop || map->GetCurrentLevel() == 3) return;
     const auto& spawns = map->GetEnemySpawns();
     for (const auto& spawn : spawns) {
         if (spawn.type == -2) {
@@ -60,6 +62,19 @@ void GameManager::SpawnEnemies() {
             enemies.push_back(new Frog(frogPos));
         }
     }
+}
+
+void GameManager::EnterShop() {
+    previousLevel = map->GetCurrentLevel();
+    // Don't ClearEnemies() here to allow them to persist (we just stop updating/drawing them)
+    map->LoadLevel(3);
+    player->GetPosition() = { 1 * 16.0f, 9 * 16.0f }; // 2nd block, 3rd row from bottom
+    camera.target = { 128.0f, 96.0f }; // Center of shop
+}
+
+void GameManager::ExitShop() {
+    map->LoadLevel(previousLevel, true); // true = returning from shop
+    player->GetPosition() = { 5 * 16.0f, (map->GetMapRows() - 3) * 16.0f }; // 6th block, 3rd row from bottom
 }
 
 void GameManager::RestartLevel() {
@@ -89,23 +104,29 @@ void GameManager::PlayerDied() {
 }
 
 void GameManager::UpdateCamera() {
-    Vector2 playerPos = player->GetPosition();
-    float targetX = (float)playerPos.x;
-    
-    // One-way scrolling logic
-    if (targetX > maxCameraX) {
-        maxCameraX = targetX;
-    }
-    
-    camera.target.x = floorf(maxCameraX);
-    camera.target.y = 144.0f; // Lock Y camera to show ground at bottom
+    if (map->GetCurrentLevel() == 3) {
+        // Lock camera perfectly to the center of the 256x192 room
+        camera.target.x = 128.0f;
+        camera.target.y = 96.0f; 
+    } else {
+        Vector2 playerPos = player->GetPosition();
+        float targetX = (float)playerPos.x;
+        
+        // One-way scrolling logic
+        if (targetX > maxCameraX) {
+            maxCameraX = targetX;
+        }
+        
+        camera.target.x = floorf(maxCameraX);
+        camera.target.y = 144.0f; // Lock Y camera to show ground at bottom
 
-    // Camera Clamping
-    float minX = camera.offset.x;
-    float maxX = map->GetWorldWidth() - camera.offset.x;
-    
-    if (camera.target.x < minX) camera.target.x = minX;
-    if (camera.target.x > maxX) camera.target.x = maxX;
+        // Camera Clamping
+        float minX = camera.offset.x;
+        float maxX = map->GetWorldWidth() - camera.offset.x;
+        
+        if (camera.target.x < minX) camera.target.x = minX;
+        if (camera.target.x > maxX) camera.target.x = maxX;
+    }
 }
 
 void GameManager::CullOffscreen() {
@@ -130,6 +151,7 @@ void GameManager::Update() {
             lives = 3;
             score = 0;
             playerMoney = 0;
+            shop1UpBought = false; // Reset shop item availability
             isGameOver = false;
             // Hard Reset / Load Level 1 (F2 logic)
             map->LoadLevel(1);
@@ -204,48 +226,50 @@ void GameManager::Update() {
     UpdateCamera();
     CullOffscreen();
 
-    // Update Enemies
-    for (int i = (int)enemies.size() - 1; i >= 0; i--) {
-        enemies[i]->Update(dt, *map);
-        
-        // Collision: Player Punch vs Enemy (Plant, Lava, and Quicksand are invincible)
-        if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
-            if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT && enemies[i]->GetType() != EnemyType::QUICKSAND) {
-                if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
-                    score += 200; 
-                    std::cout << "You gained 200 points by killing an enemy! Total points: " << score << std::endl;
-                    enemies[i]->Die();
-                    player->DeactivateAttackHitbox();
+    // Update Enemies (Only if NOT in shop)
+    if (map->GetCurrentLevel() != 3) {
+        for (int i = (int)enemies.size() - 1; i >= 0; i--) {
+            enemies[i]->Update(dt, *map);
+            
+            // Collision: Player Punch vs Enemy (Plant, Lava, and Quicksand are invincible)
+            if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
+                if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT && enemies[i]->GetType() != EnemyType::QUICKSAND) {
+                    if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
+                        score += 200; 
+                        std::cout << "You gained 200 points by killing an enemy! Total points: " << score << std::endl;
+                        enemies[i]->Die();
+                        player->DeactivateAttackHitbox();
+                    }
+                }
+            }
+
+            // Collision: Player Body vs Enemy (if enemy not dead)
+            if (i < (int)enemies.size() && !enemies[i]->IsDead()) {
+                if (CheckCollisionRecs(player->GetHitbox(), enemies[i]->GetHitbox())) {
+                    if (enemies[i]->GetType() == EnemyType::LAVA || 
+                        enemies[i]->GetType() == EnemyType::QUICKSAND || 
+                        enemies[i]->GetType() == EnemyType::PLANT) {
+                        PlayerDied();
+                        return; 
+                    } else if (player->IsInvincible()) {
+                        // Player is invincible, ignore normal enemies
+                        continue; 
+                    } else {
+                        PlayerDied();
+                        return;
+                    }
                 }
             }
         }
 
-        // Collision: Player Body vs Enemy (if enemy not dead)
-        if (i < (int)enemies.size() && !enemies[i]->IsDead()) {
-            if (CheckCollisionRecs(player->GetHitbox(), enemies[i]->GetHitbox())) {
-                if (enemies[i]->GetType() == EnemyType::LAVA || 
-                    enemies[i]->GetType() == EnemyType::QUICKSAND || 
-                    enemies[i]->GetType() == EnemyType::PLANT) {
-                    PlayerDied();
-                    return; 
-                } else if (player->IsInvincible()) {
-                    // Player is invincible, ignore normal enemies
-                    continue; 
-                } else {
-                    PlayerDied();
-                    return;
-                }
+        // Cleanup dead enemies
+        for (auto it = enemies.begin(); it != enemies.end(); ) {
+            if ((*it)->IsDead()) {
+                delete *it;
+                it = enemies.erase(it);
+            } else {
+                ++it;
             }
-        }
-    }
-
-    // Cleanup dead enemies
-    for (auto it = enemies.begin(); it != enemies.end(); ) {
-        if ((*it)->IsDead()) {
-            delete *it;
-            it = enemies.erase(it);
-        } else {
-            ++it;
         }
     }
 
@@ -364,6 +388,48 @@ void GameManager::Update() {
             return;
         }
     }
+
+    // Shop Interactions
+    for (int r = 0; r < map->GetMapRows(); r++) {
+        for (int c = 0; c < map->GetMapCols(); c++) {
+            int tid = map->GetTile(r, c);
+            if (tid == 40 || tid == 42 || tid == 43) {
+                float tx = (float)c * TILE_SIZE;
+                float ty = (float)r * TILE_SIZE;
+                Rectangle hb = { tx, ty, (float)TILE_SIZE, (float)TILE_SIZE };
+                
+                if (tid == 40) { // Enter Door
+                    hb.x += map->doorOffsetX;
+                    hb.y += map->doorOffsetY;
+                    hb.height = 32; // Make hitbox tall enough to reach the ground
+                    if (CheckCollisionRecs(player->GetHitbox(), hb) && player->IsGrounded() && IsKeyPressed(KEY_SPACE)) {
+                        EnterShop();
+                        return; // Level changed, stop updating this frame
+                    }
+                } else if (tid == 42) { // 1UP Item
+                    hb.x += map->oneUpOffsetX;
+                    hb.y += map->oneUpOffsetY;
+                    if (!shop1UpBought && CheckCollisionRecs(player->GetHitbox(), hb) && IsKeyPressed(KEY_SPACE)) {
+                        if (playerMoney >= 100) {
+                            playerMoney -= 100;
+                            lives++;
+                            shop1UpBought = true;
+                            std::cout << "Bought 1UP! Lives: " << lives << " Money: " << playerMoney << std::endl;
+                        }
+                    }
+                } else if (tid == 43) { // Exit Sign
+                    hb.x += map->exitOffsetX;
+                    hb.y += map->exitOffsetY;
+                    hb.width = 24;
+                    hb.height = 60;
+                    if (CheckCollisionRecs(player->GetHitbox(), hb) && player->IsGrounded() && IsKeyPressed(KEY_SPACE)) {
+                        ExitShop();
+                        return; // Level changed, stop updating this frame
+                    }
+                }
+            }
+        }
+    }
 }
 
 void GameManager::Draw() {
@@ -389,30 +455,37 @@ void GameManager::Draw() {
     // 1. Sky Layer
     map->DrawBackground();
 
-    // 2. Plant Enemies (Only the Plants)
-    for (auto enemy : enemies) {
-        if (enemy->GetType() == EnemyType::PLANT) {
-            enemy->Draw(showDebugHitboxes);
+    // 2. Enemies (Only if NOT in shop)
+    if (map->GetCurrentLevel() != 3) {
+        // Plant Enemies (Only the Plants)
+        for (auto enemy : enemies) {
+            if (enemy->GetType() == EnemyType::PLANT) {
+                enemy->Draw(showDebugHitboxes);
+            }
+        }
+
+        // Static hazards drawn behind player/foreground
+        for (auto enemy : enemies) {
+            if (enemy->GetType() == EnemyType::LAVA || enemy->GetType() == EnemyType::QUICKSAND) {
+                enemy->Draw(showDebugHitboxes);
+            }
         }
     }
 
-    // 3. Main Map Tiles, Lava, and Quicksand (Static hazards drawn behind player/foreground)
-    for (auto enemy : enemies) {
-        if (enemy->GetType() == EnemyType::LAVA || enemy->GetType() == EnemyType::QUICKSAND) {
-            enemy->Draw(showDebugHitboxes);
-        }
-    }
-    map->DrawTiles();
+    // 3. Main Map Tiles
+    map->DrawTiles(shop1UpBought);
     
     // Draw Dropped Items
     for (const auto& item : droppedItems) {
-        map->DrawTile(item.tileID, item.position);
+        map->DrawTile(item.tileID, item.position, shop1UpBought);
     }
 
-    // 4. Player & Other Enemies (Bird, Scorpion, Frog)
-    for (auto enemy : enemies) {
-        if (enemy->GetType() == EnemyType::BIRD || enemy->GetType() == EnemyType::SCORPION || enemy->GetType() == EnemyType::FROG) {
-            enemy->Draw(showDebugHitboxes);
+    // 4. Moving Enemies (Only if NOT in shop)
+    if (map->GetCurrentLevel() != 3) {
+        for (auto enemy : enemies) {
+            if (enemy->GetType() == EnemyType::BIRD || enemy->GetType() == EnemyType::SCORPION || enemy->GetType() == EnemyType::FROG) {
+                enemy->Draw(showDebugHitboxes);
+            }
         }
     }
 

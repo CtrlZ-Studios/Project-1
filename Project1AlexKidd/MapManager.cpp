@@ -44,37 +44,80 @@ static const int LEVEL_2_DATA[MAP_ROWS][MAP2_COLS] = {
    { 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1}
 };
 
-MapManager::MapManager() : tilesetLoaded(false), currentLevel(1), currentCols(MAP_COLS) {
+static const int LEVEL_3_DATA[12][16] = {
+    {41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 43, 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+};
+
+MapManager::MapManager() : tilesetLoaded(false), currentLevel(1), currentCols(MAP_COLS), currentRows(MAP_ROWS) {
     tileset = LoadTexture("Sprites/tileset.png");
     if (tileset.id != 0) tilesetLoaded = true;
+
+    shopTex = LoadTexture("Sprites/shop.png");
+    doorTex = LoadTexture("Sprites/door.png");
+    shopInteriorTex = LoadTexture("Sprites/shopinterior.png");
+    oneUpTex = LoadTexture("Sprites/1up.png");
+    exitTex = LoadTexture("Sprites/exit.png");
+
+    SetTextureFilter(shopTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(doorTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(shopInteriorTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(oneUpTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(exitTex, TEXTURE_FILTER_POINT);
+
     LoadLevel(1);
 }
 
 MapManager::~MapManager() {
-    if (tilesetLoaded) {
-        UnloadTexture(tileset);
-    }
+    if (tilesetLoaded) UnloadTexture(tileset);
+    UnloadTexture(shopTex);
+    UnloadTexture(doorTex);
+    UnloadTexture(shopInteriorTex);
+    UnloadTexture(oneUpTex);
+    UnloadTexture(exitTex);
 }
 
-void MapManager::LoadLevel(int levelIndex) {
+void MapManager::LoadLevel(int levelIndex, bool returningFromShop) {
     currentLevel = levelIndex;
     enemySpawns.clear();
     std::memset(mapData, 0, sizeof(mapData));
 
-    if (levelIndex == 2) {
+    if (levelIndex == 3) {
+        currentCols = 16;
+        currentRows = 15;
+        for (int r = 0; r < 15; r++) {
+            std::memcpy(mapData[r], LEVEL_3_DATA[r], sizeof(LEVEL_3_DATA[r]));
+        }
+    } else if (levelIndex == 2) {
         currentCols = MAP2_COLS;
+        currentRows = MAP_ROWS;
         for (int r = 0; r < MAP_ROWS; r++) {
             std::memcpy(mapData[r], LEVEL_2_DATA[r], sizeof(LEVEL_2_DATA[r]));
         }
+
+        // --- INJECT SHOP INTO LEVEL 2 ---
+        mapData[8][3] = 39;  // Draw shop exterior starting at row 8, col 3
+        mapData[11][3] = 40; // Draw door interact hitbox at row 11, col 3
     } else {
         currentCols = MAP_COLS;
+        currentRows = MAP_ROWS;
         for (int r = 0; r < MAP_ROWS; r++) {
             std::memcpy(mapData[r], LEVEL_1_DATA[r], sizeof(LEVEL_1_DATA[r]));
         }
     }
 
     // Scan for spawn marker (-1, -9) and enemies (-2 to -8)
-    for (int r = 0; r < MAP_ROWS; r++) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             if (mapData[r][c] == -1) {
                 // Default player spawn: Centered in tile
@@ -104,7 +147,7 @@ void MapManager::LoadLevel(int levelIndex) {
 void MapManager::DrawBackground() {
     Rectangle skySource = { 16, 16, 16, 16 }; // Row 2, Col 2 (1-indexed)
 
-    for (int r = 0; r < MAP_ROWS; r++) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
             
@@ -118,14 +161,14 @@ void MapManager::DrawBackground() {
     }
 }
 
-void MapManager::DrawTiles() {
-    for (int r = 0; r < MAP_ROWS; r++) {
+void MapManager::DrawTiles(bool shop1UpBought) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
             
             // Draw specific tiles (Skip 12 and 27, they are foreground)
             if (mapData[r][c] != 0 && mapData[r][c] != 12 && mapData[r][c] != 27) {
-                DrawTile(mapData[r][c], pos);
+                DrawTile(mapData[r][c], pos, shop1UpBought);
             }
         }
     }
@@ -136,7 +179,7 @@ void MapManager::DrawForeground() {
     Rectangle source12 = { 32, 128, 16, 16 }; // Grass_2_top (Tile 12)
     Rectangle source27 = { 32, 192, 16, 16 }; // Castle's grass tile (Tile 27)
 
-    for (int r = 0; r < MAP_ROWS; r++) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             if (mapData[r][c] == 12 || mapData[r][c] == 27) {
                 Rectangle currentSource = (mapData[r][c] == 12) ? source12 : source27;
@@ -147,14 +190,42 @@ void MapManager::DrawForeground() {
     }
 }
 
-void MapManager::DrawTile(int tileID, Vector2 position) {
-    if (!tilesetLoaded || tileID == 0) return;
+void MapManager::DrawTile(int tileID, Vector2 position, bool shop1UpBought) {
+    if (tileID == 0) return;
+
+    // Custom Full-Size Textures
+    if (tileID == 39) {
+        // The +9 offsets it perfectly to the ground
+        DrawTexture(shopTex, (int)position.x, (int)position.y + 9, WHITE);
+        return;
+    }
+    if (tileID == 41) {
+        DrawTexture(shopInteriorTex, (int)position.x, (int)position.y, WHITE);
+        return;
+    }
     
     // Task 3: Tile 38 Rendering Offset (-8 pixels Y)
     if (tileID == 38) {
         position.y -= 8;
     }
 
+    // Shop System Tiles
+    if (tileID == 40) {
+        DrawTexture(doorTex, (int)(position.x + doorOffsetX), (int)(position.y + doorOffsetY), WHITE);
+        return;
+    }
+    if (tileID == 42) {
+        if (!shop1UpBought) {
+            DrawTexture(oneUpTex, (int)(position.x + oneUpOffsetX), (int)(position.y + oneUpOffsetY), WHITE);
+        }
+        return;
+    }
+    if (tileID == 43) {
+        DrawTexture(exitTex, (int)(position.x + exitOffsetX), (int)(position.y + exitOffsetY), WHITE);
+        return;
+    }
+
+    if (!tilesetLoaded) return;
     Rectangle source = { 0, 0, 16, 16 }; 
     switch (tileID) {
         case 1: source = { 32, 112, 16, 16 }; break; // Rock block

@@ -396,7 +396,8 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
 void PlayerManager::Draw(bool showDebug) {
     if (state == PlayerState::DYING && deathSpriteLoaded) {
         Rectangle source = { currentFrame * 16.0f, 0, 16.0f, 24.0f };
-        DrawTextureRec(deathSpriteSheet, source, position, WHITE);
+        Vector2 drawPos = { position.x - 8.0f, position.y }; // Center 16px sprite on hitbox center (position.x)
+        DrawTextureRec(deathSpriteSheet, source, drawPos, WHITE);
     } 
     else if (IsInvincible() && invencibleSpriteLoaded) {
         // Directly use currentFrame since the invincible sheet matches the normal sheet layout
