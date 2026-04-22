@@ -65,6 +65,8 @@ Rectangle PlayerManager::GetHitbox() const {
 }
 
 void PlayerManager::Update(float deltaTime, const MapManager& map) {
+    wasGrounded = isGrounded;
+
     // 0. Handle Stun Logic
     if (state == PlayerState::STUNNED) {
         stunTimer -= deltaTime;
@@ -97,6 +99,10 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     bool moveLeftInput = IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT);
     bool moveRightInput = IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT);
     bool crouchInput = (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) && isGrounded;
+
+    if (IsKeyDown(KEY_A) || IsKeyDown(KEY_D) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_RIGHT)) {
+        applyLandingFriction = false;
+    }
 
     if (state != PlayerState::ATTACKING) {
         attackHitboxActive = false;
@@ -150,12 +156,21 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
                 facingRight = true;
             } else {
                 if (isGrounded) {
+                    // Step B: Decelerate using Anti-Ice logic
+                    float currentFriction = applyLandingFriction ? stoppingFriction : groundFriction;
+                    
                     if (velocity.x > 0) {
-                        velocity.x -= groundFriction * deltaTime;
-                        if (velocity.x < 0) velocity.x = 0;
+                        velocity.x -= currentFriction * deltaTime;
+                        if (velocity.x <= 0) {
+                            velocity.x = 0;
+                            applyLandingFriction = false; // Reset once stopped
+                        }
                     } else if (velocity.x < 0) {
-                        velocity.x += groundFriction * deltaTime;
-                        if (velocity.x > 0) velocity.x = 0;
+                        velocity.x += currentFriction * deltaTime;
+                        if (velocity.x >= 0) {
+                            velocity.x = 0;
+                            applyLandingFriction = false; // Reset once stopped
+                        }
                     }
                 }
             }
@@ -170,11 +185,15 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     if (velocity.y > terminalVelocity) velocity.y = terminalVelocity;
 
     if (attackTimer <= 0 && !crouchInput && !shouldBeBlockedCrouch) {
-        if (isGrounded && (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W))) {
-            if (fabs(velocity.x) > 0.5f) {
+        // Step C: The 3-Tier Jump
+        if (isGrounded && (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))) {
+            float absVx = fabs(velocity.x);
+            if (absVx < maxMoveSpeed * 0.20f) {
+                velocity.y = jumpForceStanding;
+            } else if (absVx > maxMoveSpeed * 0.80f) {
                 velocity.y = jumpForceMoving;
             } else {
-                velocity.y = jumpForceStanding;
+                velocity.y = (jumpForceStanding + jumpForceMoving) / 2.0f;
             }
             isGrounded = false;
         }
@@ -206,6 +225,14 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
     if (map.CheckCollision(yHitbox)) {
         if (velocity.y > 0) { // Falling/Landing
             isGrounded = true;
+
+            if (!wasGrounded && isGrounded && !IsKeyDown(KEY_A) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) {
+                applyLandingFriction = true;
+            }
+            if (IsKeyDown(KEY_A) || IsKeyDown(KEY_D) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_RIGHT)) {
+                applyLandingFriction = false;
+            }
+
             int r = (int)floorf((yHitbox.y + yHitbox.height) / TILE_SIZE);
             
             bool hitTile12 = false;

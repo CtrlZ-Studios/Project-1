@@ -66,16 +66,22 @@ private:
     Vector2 stunStartPosition;
     bool stunWithPunchSprite;
 
-    // Movement Constants
+// Movement Constants
     const float maxMoveSpeed = 120.0f;
     const float moveAcceleration = 1000.0f;
     const float groundFriction = 480.0f;
-    const float gravity = 800.0f;
+    
+    // -- UPDATED FOR FLOATY AIR TIME --
+    const float gravity = 450.0f; // Lowered from 800 for more air-time
     const float terminalVelocity = 350.0f;
-    const float jumpForceStanding = -277.13f; // Height: 3 tiles (48px) -> sqrt(2 * 1600 * 48)
-    const float jumpForceMoving = -320.0f;   // Height: 4 tiles (64px) -> sqrt(2 * 1600 * 64)
+    const float jumpForceStanding = -207.85f; // Recalculated for exactly 3 tiles (48px)
+    const float jumpForceMoving = -240.0f;    // Recalculated for exactly 4 tiles (64px)
     const float jumpCutMultiplier = 0.5f;
     const float blockedCrouchSpeed = 5.0f;
+
+    float stoppingFriction = 1000.0f;
+    bool applyLandingFriction = false;
+    bool wasGrounded = false;
 };
 
 #endif // PLAYER_MANAGER_H
