@@ -82,19 +82,10 @@ void GameManager::RestartLevel() {
 }
 
 void GameManager::PlayerDied() {
+    if (player->GetState() == PlayerState::DYING) return; // Prevent double-death
     lives--;
     std::cout << "Lost a life! " << lives << " remaining." << std::endl;
-    if (lives <= 0) {
-        isGameOver = true;
-    } else {
-        // DYNAMIC RESPAWN: Left edge of a 256px virtual screen
-        float leftEdgeX = camera.target.x - (256.0f / 2.0f);
-        Vector2 newPos = map->GetSafeRespawnPosition(leftEdgeX, enemies);
-        player->GetPosition() = newPos; // Assuming GetPosition() returns a reference, otherwise use a setter
-
-        // Reset velocity so player doesn't carry death momentum
-        player->velocity = {0, 0}; 
-    }
+    player->TriggerDeath();
 }
 
 void GameManager::UpdateCamera() {
@@ -150,6 +141,19 @@ void GameManager::Update() {
     float dt = GetFrameTime();
     if (dt > 0.05f) dt = 0.05f;
     
+    if (player->GetState() == PlayerState::DYING) {
+        float topCameraY = camera.target.y - (192.0f / 2.0f);
+        if (player->GetPosition().y + 24.0f < topCameraY) { // Toes off screen
+            if (lives <= 0) {
+                isGameOver = true;
+            } else {
+                float leftEdgeX = camera.target.x - (256.0f / 2.0f);
+                Vector2 newPos = map->GetSafeRespawnPosition(leftEdgeX, enemies);
+                player->TriggerRespawn(newPos);
+            }
+        }
+    }
+
     if (IsKeyPressed(KEY_F1)) {
         showDebugHitboxes = !showDebugHitboxes;
     }
@@ -173,6 +177,9 @@ void GameManager::Update() {
     }
     if (IsKeyPressed(KEY_F6)) {
         PlayerDied();
+    }
+    if (IsKeyPressed(KEY_F7)) {
+        player->TogglePermInvincibility();
     }
 
     // Update Sound (Music Stream)
@@ -215,9 +222,14 @@ void GameManager::Update() {
 
         // Collision: Player Body vs Enemy (if enemy not dead)
         if (i < (int)enemies.size() && !enemies[i]->IsDead()) {
-            if (CheckCollisionRecs(player->GetHitbox(), enemies[i]->GetHitbox())) {
-                PlayerDied();
-                return; // Level restarted or game over, exit update
+            bool isInvincible = player->IsInvincible();
+            bool isHazard = (enemies[i]->GetType() == EnemyType::LAVA || enemies[i]->GetType() == EnemyType::QUICKSAND);
+            
+            if (!isInvincible || isHazard) {
+                if (CheckCollisionRecs(player->GetHitbox(), enemies[i]->GetHitbox())) {
+                    PlayerDied();
+                    return; // Level restarted or game over, exit update
+                }
             }
         }
     }

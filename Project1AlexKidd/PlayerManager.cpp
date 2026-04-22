@@ -23,6 +23,11 @@ PlayerManager::PlayerManager(Vector2 spawnPos) {
     SetTextureFilter(spriteSheet, TEXTURE_FILTER_POINT);
     spriteLoaded = (spriteSheet.id != 0);
 
+    deathSpriteSheet = LoadTexture("Sprites/death.png");
+    invencibleSpriteSheet = LoadTexture("Sprites/invencible.png");
+    deathSpriteLoaded = (deathSpriteSheet.id != 0);
+    invencibleSpriteLoaded = (invencibleSpriteSheet.id != 0);
+
     currentFrame = 4; // Start at idle frame
     frameTimer = 0.0f;
     frameDuration = 0.1f;
@@ -31,6 +36,12 @@ PlayerManager::PlayerManager(Vector2 spawnPos) {
 PlayerManager::~PlayerManager() {
     if (spriteLoaded) {
         UnloadTexture(spriteSheet);
+    }
+    if (deathSpriteLoaded) {
+        UnloadTexture(deathSpriteSheet);
+    }
+    if (invencibleSpriteLoaded) {
+        UnloadTexture(invencibleSpriteSheet);
     }
 }
 
@@ -65,6 +76,27 @@ Rectangle PlayerManager::GetHitbox() const {
 }
 
 void PlayerManager::Update(float deltaTime, const MapManager& map) {
+    if (state == PlayerState::DYING) {
+        position.y += velocity.y * deltaTime; // Float upwards
+        frameTimer += deltaTime;
+        if (frameTimer >= 0.15f) { // Cycle angel animation
+            frameTimer = 0.0f;
+            currentFrame = (currentFrame + 1) % 3;
+        }
+        return; // SKIP ALL PHYSICS AND INPUTS
+    }
+
+    if (invincibilityTimer > 0) {
+        invincibilityTimer -= deltaTime;
+    }
+    if (IsInvincible()) {
+        flickerTimer += deltaTime;
+        if (flickerTimer >= invincibilityFlickerRate) {
+            flickerTimer = 0;
+            currentColorRow = (currentColorRow == 0) ? 1 : 0;
+        }
+    }
+
     wasGrounded = isGrounded;
 
     // 0. Handle Stun Logic
@@ -359,7 +391,22 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
 }
 
 void PlayerManager::Draw(bool showDebug) {
-    if (spriteLoaded) {
+    if (state == PlayerState::DYING && deathSpriteLoaded) {
+        Rectangle source = { currentFrame * 16.0f, 0, 16.0f, 24.0f };
+        DrawTextureRec(deathSpriteSheet, source, position, WHITE);
+    } 
+    else if (IsInvincible() && invencibleSpriteLoaded) {
+        int invFrame = 4; // Default Idle
+        if (state == PlayerState::WALKING) invFrame = currentFrame % 4;
+        else if (state == PlayerState::ATTACKING || state == PlayerState::STUNNED) invFrame = 5;
+        else if (state == PlayerState::JUMPING) invFrame = 6;
+        else if (state == PlayerState::CROUCHING || state == PlayerState::BLOCKED_CROUCH) invFrame = 7;
+
+        Rectangle source = { invFrame * 24.0f, currentColorRow * 24.0f, facingRight ? 24.0f : -24.0f, 24.0f };
+        Vector2 drawPos = { (float)(int)roundf(position.x - spineOffset), (float)(int)roundf(position.y) };
+        DrawTextureRec(invencibleSpriteSheet, source, drawPos, WHITE);
+    } 
+    else if (spriteLoaded) {
         float width = (float)frameWidth;
         if (!facingRight) width = -width;
         
@@ -411,4 +458,18 @@ void PlayerManager::Draw(bool showDebug) {
 
 Rectangle PlayerManager::GetAttackHitbox() const {
     return attackHitbox;
+}
+
+void PlayerManager::TriggerDeath() {
+    state = PlayerState::DYING;
+    velocity = { 0, deathAscentSpeed };
+    currentFrame = 0;
+    frameTimer = 0.0f;
+}
+
+void PlayerManager::TriggerRespawn(Vector2 newPos) {
+    position = newPos;
+    state = PlayerState::IDLE;
+    velocity = { 0, 0 };
+    invincibilityTimer = invincibilityDuration;
 }

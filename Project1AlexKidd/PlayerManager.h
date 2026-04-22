@@ -10,7 +10,8 @@ enum class PlayerState {
     CROUCHING,
     ATTACKING,
     BLOCKED_CROUCH,
-    STUNNED
+    STUNNED,
+    DYING
 };
 
 class MapManager; // Forward declaration
@@ -33,6 +34,11 @@ public:
     void TriggerStun();
     bool IsGrounded() const { return isGrounded; }
 
+    void TriggerDeath();
+    void TriggerRespawn(Vector2 newPos);
+    void TogglePermInvincibility() { permInvincible = !permInvincible; }
+    bool IsInvincible() const { return permInvincible || invincibilityTimer > 0; }
+
     Vector2 velocity;
 
     // Constants
@@ -48,6 +54,17 @@ private:
 
     Texture2D spriteSheet;
     bool spriteLoaded;
+
+    Texture2D deathSpriteSheet; bool deathSpriteLoaded;
+    Texture2D invencibleSpriteSheet; bool invencibleSpriteLoaded;
+    float invincibilityTimer = 0.0f;
+    float flickerTimer = 0.0f;
+    int currentColorRow = 0;
+    bool permInvincible = false;
+
+    const float invincibilityDuration = 2.0f;
+    const float invincibilityFlickerRate = 0.1f;
+    const float deathAscentSpeed = -60.0f;
 
     // Last input priority tracking
     int lastMoveKeyPressed; // 0: None, 1: Left (A), 2: Right (D)
