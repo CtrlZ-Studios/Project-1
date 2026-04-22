@@ -13,11 +13,11 @@ SoundManager::SoundManager() : musicLoaded(false) {
     }
 
     // Load SFX
-    jumpSound = LoadSound("Sound/jump.wav");
-    punchSound = LoadSound("Sound/punch.wav");
-    coinSound = LoadSound("Sound/coin.wav");
-    playerDeathSound = LoadSound("Sound/death.wav");
-    enemyDeathSound = LoadSound("Sound/enemy_death.wav");
+    jumpSound = LoadSound("Sound/01.wav");
+    punchSound = LoadSound("Sound/03.wav");
+    coinSound = LoadSound("Sound/06.wav");
+    playerDeathSound = LoadSound("Sound/35.wav");
+    enemyDeathSound = LoadSound("Sound/07.wav");
 }
 
 SoundManager::~SoundManager() {
