@@ -416,3 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+Project1AlexKidd/.DS_Store
+build/.DS_Store
+.DS_Store
