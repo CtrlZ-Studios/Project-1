@@ -3,7 +3,9 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
+#include <algorithm>
 #include "PlayerManager.h"
+#include "Enemy.h"
 
 // Level Templates
 static const int LEVEL_1_DATA[MAP_ROWS][MAP_COLS] = {
@@ -306,3 +308,42 @@ void MapManager::CullOffscreen(float leftEdgeX) {
         }
     }
 }
+
+Vector2 MapManager::GetSafeRespawnPosition(float leftCameraX, const std::vector<Enemy*>& enemies) {
+    // Calculate the starting column based on the left side of the camera
+    int startCol = std::max(0, (int)(leftCameraX / TILE_SIZE));
+    int endCol = std::min(currentCols - 1, startCol + 16); // Scan up to one screen width right
+
+    for (int c = startCol; c <= endCol; c++) {
+        for (int r = 2; r < MAP_ROWS; r++) { // Start at 2 to check the two blocks above
+            int groundTile = mapData[r][c];
+            int space1 = mapData[r-1][c];
+            int space2 = mapData[r-2][c];
+
+            // Solidity check logic based on existing tiles (1-15, 21-24 are solid)
+            bool groundSolid = (groundTile >= 1 && groundTile <= 15) || (groundTile >= 21 && groundTile <= 24);
+            bool space1Solid = (space1 >= 1 && space1 <= 15) || (space1 >= 21 && space1 <= 24);
+            bool space2Solid = (space2 >= 1 && space2 <= 15) || (space2 >= 21 && space2 <= 24);
+
+            if (groundSolid && !space1Solid && !space2Solid) {
+                // Check if an enemy is directly on this spot
+                Rectangle spawnArea = { (float)c * TILE_SIZE, (float)(r-2) * TILE_SIZE, (float)TILE_SIZE, (float)TILE_SIZE * 2 };
+                bool enemyBlocking = false;
+                for (auto enemy : enemies) {
+                    if (CheckCollisionRecs(spawnArea, enemy->GetHitbox())) {
+                        enemyBlocking = true;
+                        break;
+                    }
+                }
+
+                if (!enemyBlocking) {
+                    // Clamp the X position so we don't spawn behind the camera's left boundary!
+                    float safeX = std::max((float)c * TILE_SIZE, leftCameraX + 2.0f);
+                    return { safeX, (float)(r-2) * TILE_SIZE };
+                }
+            }
+        }
+    }
+    return GetSpawnPosition(); // Fallback to map start if no safe space exists
+}
+

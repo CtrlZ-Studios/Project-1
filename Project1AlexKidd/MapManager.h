@@ -36,6 +36,8 @@ public:
     bool CheckCollision(Rectangle hitbox) const;
     void CullOffscreen(float leftEdgeX);
     
+    Vector2 GetSafeRespawnPosition(float leftCameraX, const std::vector<class Enemy*>& enemies);
+
     Vector2 GetSpawnPosition() const { return spawnPosition; }
     const std::vector<EnemySpawn>& GetEnemySpawns() const { return enemySpawns; }
     int GetCurrentLevel() const { return currentLevel; }

@@ -87,7 +87,13 @@ void GameManager::PlayerDied() {
     if (lives <= 0) {
         isGameOver = true;
     } else {
-        RestartLevel();
+        // DYNAMIC RESPAWN: Left edge of a 256px virtual screen
+        float leftEdgeX = camera.target.x - (256.0f / 2.0f);
+        Vector2 newPos = map->GetSafeRespawnPosition(leftEdgeX, enemies);
+        player->GetPosition() = newPos; // Assuming GetPosition() returns a reference, otherwise use a setter
+
+        // Reset velocity so player doesn't carry death momentum
+        player->velocity = {0, 0}; 
     }
 }
 
@@ -164,6 +170,9 @@ void GameManager::Update() {
     if (IsKeyPressed(KEY_F5)) {
         map->LoadLevel(2);
         RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F6)) {
+        PlayerDied();
     }
 
     // Update Sound (Music Stream)

@@ -33,6 +33,8 @@ public:
     void TriggerStun();
     bool IsGrounded() const { return isGrounded; }
 
+    Vector2 velocity;
+
     // Constants
     static const int frameWidth = 24;
     static const int frameHeight = 24;
@@ -41,7 +43,6 @@ public:
 
 private:
     Vector2 position;
-    Vector2 velocity;
     bool isGrounded;
     bool facingRight;
 
