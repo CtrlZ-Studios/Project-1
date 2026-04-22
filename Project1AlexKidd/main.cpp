@@ -14,6 +14,10 @@ int main() {
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     InitWindow(windowWidth, windowHeight, "Alex Kidd Prototype");
+    
+    // --- FIX: Silence Raylib's terminal spam so you can see your cout messages ---
+    SetTraceLogLevel(LOG_WARNING);
+    
     SetWindowMinSize(virtualWidth, virtualHeight);
 
     GameManager game;

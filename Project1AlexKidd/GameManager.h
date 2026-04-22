@@ -23,6 +23,7 @@ public:
 
     void Update();
     void Draw();
+    void PlayerDied();
 
     PlayerManager* GetPlayerManager() { return player; }
     MapManager* GetMapManager() { return map; }
@@ -49,6 +50,11 @@ private:
 
     // Economy System
     int playerMoney;
+
+    // Progression System
+    int lives = 3;
+    int score = 0;
+    bool isGameOver = false;
 };
 
 #endif // GAME_MANAGER_H

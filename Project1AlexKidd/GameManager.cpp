@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 GameManager::GameManager() {
     map = new MapManager();   // Map first, so spawn point is ready
@@ -80,6 +81,16 @@ void GameManager::RestartLevel() {
     SpawnEnemies();
 }
 
+void GameManager::PlayerDied() {
+    lives--;
+    std::cout << "Lost a life! " << lives << " remaining." << std::endl;
+    if (lives <= 0) {
+        isGameOver = true;
+    } else {
+        RestartLevel();
+    }
+}
+
 void GameManager::UpdateCamera() {
     Vector2 playerPos = player->GetPosition();
     float targetX = (float)playerPos.x;
@@ -117,6 +128,19 @@ void GameManager::CullOffscreen() {
 }
 
 void GameManager::Update() {
+    if (isGameOver) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            lives = 3;
+            score = 0;
+            playerMoney = 0;
+            isGameOver = false;
+            // Hard Reset / Load Level 1 (F2 logic)
+            map->LoadLevel(1);
+            RestartLevel();
+        }
+        return; // Skip the rest of the update
+    }
+
     float dt = GetFrameTime();
     if (dt > 0.05f) dt = 0.05f;
     
@@ -148,6 +172,12 @@ void GameManager::Update() {
     // Update Player with Map collision
     player->Update(dt, *map);
     
+    // Check for falling off map (Y > WORLD_HEIGHT)
+    if (player->GetPosition().y > 192) { // 192 is the screen/world height based on camera logic
+        PlayerDied();
+        return;
+    }
+
     // Task 1: Left-Screen Boundary for Player
     float leftEdgeX = camera.target.x - camera.offset.x;
     Rectangle playerHb = player->GetHitbox();
@@ -166,6 +196,8 @@ void GameManager::Update() {
         if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
             if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT && enemies[i]->GetType() != EnemyType::QUICKSAND) {
                 if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
+                    score += 200; 
+                    std::cout << "You gained 200 points by killing an enemy! Total points: " << score << std::endl;
                     enemies[i]->Die();
                     player->DeactivateAttackHitbox();
                 }
@@ -175,8 +207,8 @@ void GameManager::Update() {
         // Collision: Player Body vs Enemy (if enemy not dead)
         if (i < (int)enemies.size() && !enemies[i]->IsDead()) {
             if (CheckCollisionRecs(player->GetHitbox(), enemies[i]->GetHitbox())) {
-                RestartLevel();
-                return; // Level restarted, exit update
+                PlayerDied();
+                return; // Level restarted or game over, exit update
             }
         }
     }
@@ -274,7 +306,9 @@ void GameManager::Update() {
                 if (droppedItems[i].tileID == 3) amount = 20;
                 if (droppedItems[i].tileID == 21) amount = 10;
                 playerMoney += amount;
+                score += 100;
                 std::cout << "Picked up " << amount << " money. Total: " << playerMoney << std::endl;
+                std::cout << "You gained 100 points by collecting money! Total points: " << score << std::endl;
                 droppedItems.erase(droppedItems.begin() + i);
             }
         }
@@ -288,11 +322,15 @@ void GameManager::Update() {
             // 3 is Big (+20), 21 is Small (+10)
             int amount = (collectRes.tileID == 3) ? 20 : 10;
             playerMoney += amount;
+            score += 100;
             std::cout << "Picked up " << amount << " money from map. Total: " << playerMoney << std::endl;
+            std::cout << "You gained 100 points by collecting money! Total points: " << score << std::endl;
         }
         
         // Onigiri (Tile 25) Advances to next level
         if (collectRes.tileID == 25) {
+            score += 1000;
+            std::cout << "You gained 1000 points by eating onigiri! Total points: " << score << std::endl;
             int nextLevel = map->GetCurrentLevel() + 1;
             if (nextLevel > 2) nextLevel = 1;
             map->LoadLevel(nextLevel);
@@ -303,6 +341,25 @@ void GameManager::Update() {
 }
 
 void GameManager::Draw() {
+    if (isGameOver) {
+        ClearBackground(BLACK);
+
+        const char* gameOverText = "GAME OVER";
+        int goWidth = MeasureText(gameOverText, 20);
+        
+        // Use camera.target to draw exactly in the center of the current screen view
+        float centerX = camera.target.x;
+        float centerY = camera.target.y;
+
+        DrawText(gameOverText, centerX - (goWidth / 2), centerY - 20, 20, WHITE);
+
+        std::string scoreStr = "Score: " + std::to_string(score);
+        int scoreWidth = MeasureText(scoreStr.c_str(), 10);
+        DrawText(scoreStr.c_str(), centerX - (scoreWidth / 2), centerY + 10, 10, WHITE);
+
+        return; 
+    }
+
     // 1. Sky Layer
     map->DrawBackground();
 
