@@ -404,7 +404,7 @@ void PlayerManager::Draw(bool showDebug) {
 
         float drawX = position.x - spineOffset;
         // Subtly shift the sprite leftward when flipped to fix internal sprite centering
-        if (!facingRight) drawX -= 7.0f; 
+        if (!facingRight) drawX -= 8.0f; 
 
         Vector2 drawPos = { (float)(int)roundf(drawX), (float)(int)roundf(position.y) };
         DrawTextureRec(invencibleSpriteSheet, source, drawPos, WHITE);
