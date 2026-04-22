@@ -24,8 +24,11 @@ PlayerManager::PlayerManager(Vector2 spawnPos) {
     spriteLoaded = (spriteSheet.id != 0);
 
     deathSpriteSheet = LoadTexture("Sprites/death.png");
-    invencibleSpriteSheet = LoadTexture("Sprites/invencible.png");
+    SetTextureFilter(deathSpriteSheet, TEXTURE_FILTER_POINT);
     deathSpriteLoaded = (deathSpriteSheet.id != 0);
+
+    invencibleSpriteSheet = LoadTexture("Sprites/invencible.png");
+    SetTextureFilter(invencibleSpriteSheet, TEXTURE_FILTER_POINT);
     invencibleSpriteLoaded = (invencibleSpriteSheet.id != 0);
 
     currentFrame = 4; // Start at idle frame
@@ -396,14 +399,14 @@ void PlayerManager::Draw(bool showDebug) {
         DrawTextureRec(deathSpriteSheet, source, position, WHITE);
     } 
     else if (IsInvincible() && invencibleSpriteLoaded) {
-        int invFrame = 4; // Default Idle
-        if (state == PlayerState::WALKING) invFrame = currentFrame % 4;
-        else if (state == PlayerState::ATTACKING || state == PlayerState::STUNNED) invFrame = 5;
-        else if (state == PlayerState::JUMPING) invFrame = 6;
-        else if (state == PlayerState::CROUCHING || state == PlayerState::BLOCKED_CROUCH) invFrame = 7;
+        // Directly use currentFrame since the invincible sheet matches the normal sheet layout
+        Rectangle source = { (float)currentFrame * 24.0f, currentColorRow * 24.0f, facingRight ? 24.0f : -24.0f, 24.0f };
 
-        Rectangle source = { invFrame * 24.0f, currentColorRow * 24.0f, facingRight ? 24.0f : -24.0f, 24.0f };
-        Vector2 drawPos = { (float)(int)roundf(position.x - spineOffset), (float)(int)roundf(position.y) };
+        float drawX = position.x - spineOffset;
+        // Subtly shift the sprite leftward when flipped to fix internal sprite centering
+        if (!facingRight) drawX -= 7.0f; 
+
+        Vector2 drawPos = { (float)(int)roundf(drawX), (float)(int)roundf(position.y) };
         DrawTextureRec(invencibleSpriteSheet, source, drawPos, WHITE);
     } 
     else if (spriteLoaded) {

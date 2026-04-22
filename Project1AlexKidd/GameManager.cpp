@@ -222,13 +222,18 @@ void GameManager::Update() {
 
         // Collision: Player Body vs Enemy (if enemy not dead)
         if (i < (int)enemies.size() && !enemies[i]->IsDead()) {
-            bool isInvincible = player->IsInvincible();
-            bool isHazard = (enemies[i]->GetType() == EnemyType::LAVA || enemies[i]->GetType() == EnemyType::QUICKSAND);
-            
-            if (!isInvincible || isHazard) {
-                if (CheckCollisionRecs(player->GetHitbox(), enemies[i]->GetHitbox())) {
+            if (CheckCollisionRecs(player->GetHitbox(), enemies[i]->GetHitbox())) {
+                if (enemies[i]->GetType() == EnemyType::LAVA || 
+                    enemies[i]->GetType() == EnemyType::QUICKSAND || 
+                    enemies[i]->GetType() == EnemyType::PLANT) {
                     PlayerDied();
-                    return; // Level restarted or game over, exit update
+                    return; 
+                } else if (player->IsInvincible()) {
+                    // Player is invincible, ignore normal enemies
+                    continue; 
+                } else {
+                    PlayerDied();
+                    return;
                 }
             }
         }

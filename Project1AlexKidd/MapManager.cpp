@@ -310,9 +310,9 @@ void MapManager::CullOffscreen(float leftEdgeX) {
 }
 
 Vector2 MapManager::GetSafeRespawnPosition(float leftCameraX, const std::vector<Enemy*>& enemies) {
-    // Calculate the starting column based on the left side of the camera
-    int startCol = std::max(0, (int)(leftCameraX / TILE_SIZE));
-    int endCol = std::min(currentCols - 1, startCol + 16); // Scan up to one screen width right
+    // Use ceil to completely ignore partially off-screen blocks
+    int startCol = std::max(0, (int)std::ceil(leftCameraX / TILE_SIZE));
+    int endCol = std::min(currentCols - 1, startCol + 16); 
 
     for (int c = startCol; c <= endCol; c++) {
         for (int r = 2; r < MAP_ROWS; r++) { // Start at 2 to check the two blocks above
@@ -337,9 +337,8 @@ Vector2 MapManager::GetSafeRespawnPosition(float leftCameraX, const std::vector<
                 }
 
                 if (!enemyBlocking) {
-                    // Clamp the X position so we don't spawn behind the camera's left boundary!
-                    float safeX = std::max((float)c * TILE_SIZE, leftCameraX + 2.0f);
-                    return { safeX, (float)(r-2) * TILE_SIZE };
+                    // No clamping needed anymore because we guarantee the block is fully on-screen
+                    return { (float)c * TILE_SIZE, (float)(r-2) * TILE_SIZE };
                 }
             }
         }
