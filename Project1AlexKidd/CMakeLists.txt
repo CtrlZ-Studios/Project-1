@@ -12,6 +12,7 @@ set(SOURCES
     PlayerManager.cpp
     MapManager.cpp
     SoundManager.cpp
+    MusicManager.cpp
     Enemy.cpp
 )
 

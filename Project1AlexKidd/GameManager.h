@@ -4,6 +4,7 @@
 #include "PlayerManager.h"
 #include "MapManager.h"
 #include "SoundManager.h"
+#include "MusicManager.h"
 #include "Enemy.h"
 #include <vector>
 #include <deque>
@@ -51,11 +52,26 @@ private:
     PlayerManager* player;
     MapManager* map;
     SoundManager* sound;
+    MusicManager* music;
     std::vector<Enemy*> enemies;
     std::vector<DroppedItem> droppedItems;
     Camera2D camera;
     float maxCameraX;
     bool showDebugHitboxes = false;
+
+    // --- Between Level Screen ---
+    enum class BetweenLevelState { NONE, BEFORE_LEVEL_1, BEFORE_LEVEL_2 };
+    BetweenLevelState betweenLevelState = BetweenLevelState::NONE;
+
+    Texture2D betweenLvl1A;   // Sprites/betweenlevels1-1.png
+    Texture2D betweenLvl1B;   // Sprites/betweenlevels1-2.png
+    Texture2D betweenLvl2A;   // Sprites/betweenlevels2-1.png
+    Texture2D betweenLvl2B;   // Sprites/betweenlevels2-2.png
+    bool betweenLevelTexturesLoaded = false;
+
+    float betweenFlickerTimer = 0.0f;
+    const float betweenFlickerInterval = 0.3f;
+    bool betweenFlickerState = false; // false = A image, true = B image
 
     // Economy System
     int playerMoney;
@@ -129,6 +145,7 @@ private:
     void DrawPauseMenu(float deltaTime);
     void DrawShopDialogue();
     void DrawStoryDialogue();
+    void DrawBetweenLevelScreen();
 };
 
 #endif // GAME_MANAGER_H

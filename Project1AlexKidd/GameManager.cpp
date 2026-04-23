@@ -8,6 +8,7 @@ GameManager::GameManager() {
     map->LoadLevel(0);        // Task: Start at Level 0 (Main Menu)
     player = new PlayerManager(map->GetSpawnPosition());
     sound = new SoundManager();
+    music = new MusicManager();
     
     // Initialize Camera
     camera = { 0 };
@@ -34,12 +35,22 @@ GameManager::GameManager() {
     pauseLvl2Tex = LoadTexture("Sprites/pauselvl2.png");
     pauseUiTex = LoadTexture("Sprites/pauseui.png");
     pauseTexturesLoaded = true;
+
+    // Load Between Level Textures
+    betweenLvl1A = LoadTexture("Sprites/betweenlevels1-1.png");
+    betweenLvl1B = LoadTexture("Sprites/betweenlevels1-2.png");
+    betweenLvl2A = LoadTexture("Sprites/betweenlevels2-1.png");
+    betweenLvl2B = LoadTexture("Sprites/betweenlevels2-2.png");
+    betweenLevelTexturesLoaded = true;
+
+    music->Play(MusicTrack::TITLE_SCREEN);
 }
 
 GameManager::~GameManager() {
     delete player;
     delete map;
     delete sound;
+    delete music;
     ClearEnemies();
 
     if (pauseTexturesLoaded) {
@@ -47,6 +58,13 @@ GameManager::~GameManager() {
         UnloadTexture(pauseLvl1Tex);
         UnloadTexture(pauseLvl2Tex);
         UnloadTexture(pauseUiTex);
+    }
+
+    if (betweenLevelTexturesLoaded) {
+        UnloadTexture(betweenLvl1A);
+        UnloadTexture(betweenLvl1B);
+        UnloadTexture(betweenLvl2A);
+        UnloadTexture(betweenLvl2B);
     }
 }
 
@@ -91,11 +109,13 @@ void GameManager::EnterShop() {
     map->LoadLevel(3);
     player->GetPosition() = { 1 * 16.0f, 9 * 16.0f }; // 2nd block, 3rd row from bottom
     camera.target = { 128.0f, 96.0f }; // Center of shop
+    if (music) music->Play(MusicTrack::THEME);
 }
 
 void GameManager::ExitShop() {
     map->LoadLevel(previousLevel, true); // true = returning from shop
     player->GetPosition() = { 5 * 16.0f, (map->GetMapRows() - 3) * 16.0f }; // 6th block, 3rd row from bottom
+    if (music) music->Play(MusicTrack::MAIN_THEME);
 }
 
 void GameManager::RestartLevel() {
@@ -127,10 +147,8 @@ void GameManager::PlayerDied() {
     lives--;
     std::cout << "Lost a life! " << lives << " remaining." << std::endl;
     player->TriggerDeath();
-    if (sound) {
-        sound->StopTheme();
-        sound->PlayPlayerDeath();
-    }
+    if (music) music->Stop();
+    if (sound) sound->PlayPlayerDeath();
 }
 
 void GameManager::UpdateCamera() {
@@ -176,6 +194,32 @@ void GameManager::CullOffscreen() {
 }
 
 void GameManager::Update() {
+    music->Update();
+
+    // --- Between Level Screen logic ---
+    if (betweenLevelState != BetweenLevelState::NONE) {
+        betweenFlickerTimer += GetFrameTime();
+        if (betweenFlickerTimer >= betweenFlickerInterval) {
+            betweenFlickerTimer -= betweenFlickerInterval;
+            betweenFlickerState = !betweenFlickerState;
+        }
+
+        if (music->IsCurrentTrackFinished()) {
+            if (betweenLevelState == BetweenLevelState::BEFORE_LEVEL_1) {
+                betweenLevelState = BetweenLevelState::NONE;
+                map->LoadLevel(1);
+                RestartLevel();
+                music->Play(MusicTrack::MAIN_THEME);
+            } else if (betweenLevelState == BetweenLevelState::BEFORE_LEVEL_2) {
+                betweenLevelState = BetweenLevelState::NONE;
+                map->LoadLevel(2);
+                RestartLevel();
+                music->Play(MusicTrack::MAIN_THEME);
+            }
+        }
+        return; // Freeze game logic during between-level screen
+    }
+
     // --- Level 1 Story Dialogue Trigger ---
     if (map->GetCurrentLevel() == 1 && !storyDialogueTriggered) {
         float playerX = player->GetPosition().x;
@@ -203,6 +247,16 @@ void GameManager::Update() {
         isPaused = !isPaused;
         pauseFlickerTimer = 0.0f;
         pauseFlickerState = false;
+        
+        if (isPaused) {
+            music->Stop();
+            music->Play(MusicTrack::THEME);
+        } else {
+            music->Stop();
+            int lvl = map->GetCurrentLevel();
+            if (lvl == 1 || lvl == 2) music->Play(MusicTrack::MAIN_THEME);
+            else if (lvl == 3) music->Play(MusicTrack::THEME); // Or whatever shop music is
+        }
     }
 
     if (isPaused) return; // Freeze everything
@@ -213,19 +267,25 @@ void GameManager::Update() {
     }
     if (IsKeyPressed(KEY_F2)) {
         playerMoney = 0;
-        map->LoadLevel(1);
-        RestartLevel();
+        betweenLevelState = BetweenLevelState::BEFORE_LEVEL_1;
+        betweenFlickerTimer = 0.0f;
+        betweenFlickerState = false;
+        music->Play(MusicTrack::LEVEL_START);
     }
     if (IsKeyPressed(KEY_F3)) {
         RestartLevel();
     }
     if (IsKeyPressed(KEY_F4)) {
-        map->LoadLevel(1);
-        RestartLevel();
+        betweenLevelState = BetweenLevelState::BEFORE_LEVEL_1;
+        betweenFlickerTimer = 0.0f;
+        betweenFlickerState = false;
+        music->Play(MusicTrack::LEVEL_START);
     }
     if (IsKeyPressed(KEY_F5)) {
-        map->LoadLevel(2);
-        RestartLevel();
+        betweenLevelState = BetweenLevelState::BEFORE_LEVEL_2;
+        betweenFlickerTimer = 0.0f;
+        betweenFlickerState = false;
+        music->Play(MusicTrack::LEVEL_START);
     }
     if (IsKeyPressed(KEY_F6)) {
         PlayerDied();
@@ -237,7 +297,9 @@ void GameManager::Update() {
     if (gameWon) {
         if (IsKeyPressed(KEY_SPACE)) {
             gameWon = false;
+            music->Stop();
             map->LoadLevel(0); // Return to Main Menu
+            music->Play(MusicTrack::TITLE_SCREEN);
             // Add any score/money resets here if necessary
             lives = 3;
             score = 0;
@@ -265,8 +327,10 @@ void GameManager::Update() {
         }
 
         if (IsKeyPressed(KEY_SPACE)) {
-            map->LoadLevel(1);
-            RestartLevel();
+            betweenLevelState = BetweenLevelState::BEFORE_LEVEL_1;
+            betweenFlickerTimer = 0.0f;
+            betweenFlickerState = false;
+            music->Play(MusicTrack::LEVEL_START);
         }
         UpdateCamera();
         return;
@@ -274,10 +338,8 @@ void GameManager::Update() {
 
     if (isGameOver) {
         if (!gameOverSoundPlayed) {
-            if (sound) {
-                sound->StopTheme();
-                sound->PlayGameOver();
-            }
+            if (music) music->Stop();
+            if (sound) sound->PlayGameOver();
             gameOverSoundPlayed = true;
         }
 
@@ -288,9 +350,9 @@ void GameManager::Update() {
             shop1UpBought = false; // Reset shop item availability
             isGameOver = false;
             gameOverSoundPlayed = false;
-            if (sound) sound->PlayTheme();
+            if (music) music->Play(MusicTrack::TITLE_SCREEN);
             // Hard Reset / Load Level 1 (F2 logic)
-            map->LoadLevel(1);
+            map->LoadLevel(0);
             RestartLevel();
         }
         return; // Skip the rest of the update
@@ -308,12 +370,12 @@ void GameManager::Update() {
                 float leftEdgeX = camera.target.x - (256.0f / 2.0f);
                 Vector2 newPos = map->GetSafeRespawnPosition(leftEdgeX, enemies);
                 player->TriggerRespawn(newPos);
-                if (sound) sound->PlayTheme();
+                if (music) music->Play(MusicTrack::MAIN_THEME);
             }
         }
     }
 
-    // Update Sound (Music Stream)
+    // Update Sound (SFX only now)
     sound->Update();
     
     // Update Player with Map collision
@@ -501,15 +563,23 @@ void GameManager::Update() {
         if (collectRes.tileID == 25) {
             score += 1000;
             std::cout << "You gained 1000 points by eating onigiri! Total points: " << score << std::endl;
-            int nextLevel = map->GetCurrentLevel() + 1;
-            if (nextLevel > 2) nextLevel = 1;
-            map->LoadLevel(nextLevel);
-            RestartLevel();
+            int currentLvl = map->GetCurrentLevel();
+            if (currentLvl == 1) {
+                betweenLevelState = BetweenLevelState::BEFORE_LEVEL_2;
+                betweenFlickerTimer = 0.0f;
+                betweenFlickerState = false;
+                music->Play(MusicTrack::LEVEL_START);
+            } else {
+                // Fallback or loop to level 1 if we had more levels
+                map->LoadLevel(1);
+                RestartLevel();
+            }
             return;
         }
 
         if (collectRes.tileID == 50) {
             gameWon = true;
+            music->Play(MusicTrack::ENDING);
         }
     }
 
@@ -560,6 +630,12 @@ void GameManager::Update() {
 }
 
 void GameManager::Draw() {
+    if (betweenLevelState != BetweenLevelState::NONE) {
+        ClearBackground(BLACK);
+        DrawBetweenLevelScreen();
+        return;
+    }
+
     if (map->GetCurrentLevel() == 0) {
         map->DrawMainMenu(menuTimer, menuColorVariant);
         return;
@@ -694,6 +770,23 @@ void GameManager::Draw() {
         DrawPauseMenu(GetFrameTime());
         BeginMode2D(camera); // Restore camera for the caller (main.cpp)
     }
+
+    if (betweenLevelState != BetweenLevelState::NONE) {
+        EndMode2D();
+        DrawBetweenLevelScreen();
+        BeginMode2D(camera);
+    }
+}
+
+void GameManager::DrawBetweenLevelScreen() {
+    Texture2D* tex = nullptr;
+    if (betweenLevelState == BetweenLevelState::BEFORE_LEVEL_1)
+        tex = betweenFlickerState ? &betweenLvl1B : &betweenLvl1A;
+    else if (betweenLevelState == BetweenLevelState::BEFORE_LEVEL_2)
+        tex = betweenFlickerState ? &betweenLvl2B : &betweenLvl2A;
+
+    if (tex != nullptr)
+        DrawTexture(*tex, 0, 0, WHITE);
 }
 
 void GameManager::DrawPauseMenu(float deltaTime) {
