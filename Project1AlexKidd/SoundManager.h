@@ -8,9 +8,6 @@ public:
     SoundManager();
     ~SoundManager();
 
-    void Update(); // To update music stream
-    void PlayTheme();
-
     void PlayJump();
     void PlayPunch();
     void PlayCoin();
@@ -18,13 +15,9 @@ public:
     void PlayEnemyDeath();
     void PlayBlockBreak();
     void PlayStarBlockBreak();
-    void StopTheme();
     void PlayGameOver();
 
 private:
-    Music themeMusic;
-    bool musicLoaded;
-
     Sound jumpSound;
     Sound punchSound;
     Sound coinSound;

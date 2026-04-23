@@ -375,9 +375,6 @@ void GameManager::Update() {
         }
     }
 
-    // Update Sound (SFX only now)
-    sound->Update();
-    
     // Update Player with Map collision
     player->Update(dt, *map, sound);
     
@@ -631,8 +628,9 @@ void GameManager::Update() {
 
 void GameManager::Draw() {
     if (betweenLevelState != BetweenLevelState::NONE) {
-        ClearBackground(BLACK);
+        EndMode2D();
         DrawBetweenLevelScreen();
+        BeginMode2D(camera);
         return;
     }
 
