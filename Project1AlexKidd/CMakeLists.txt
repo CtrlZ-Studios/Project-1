@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31.1)
 project(Project1AlexKidd VERSION 0.1.0 LANGUAGES C CXX)
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 
 # Find the raylib package (vcpkg handles this)
 find_package(raylib CONFIG REQUIRED)
