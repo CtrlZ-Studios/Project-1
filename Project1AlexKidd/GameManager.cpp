@@ -107,6 +107,10 @@ void GameManager::PlayerDied() {
     lives--;
     std::cout << "Lost a life! " << lives << " remaining." << std::endl;
     player->TriggerDeath();
+    if (sound) {
+        sound->StopTheme();
+        sound->PlayPlayerDeath();
+    }
 }
 
 void GameManager::UpdateCamera() {
@@ -218,12 +222,22 @@ void GameManager::Update() {
     }
 
     if (isGameOver) {
+        if (!gameOverSoundPlayed) {
+            if (sound) {
+                sound->StopTheme();
+                sound->PlayGameOver();
+            }
+            gameOverSoundPlayed = true;
+        }
+
         if (IsKeyPressed(KEY_SPACE)) {
             lives = 3;
             score = 0;
             playerMoney = 0;
             shop1UpBought = false; // Reset shop item availability
             isGameOver = false;
+            gameOverSoundPlayed = false;
+            if (sound) sound->PlayTheme();
             // Hard Reset / Load Level 1 (F2 logic)
             map->LoadLevel(1);
             RestartLevel();
@@ -243,6 +257,7 @@ void GameManager::Update() {
                 float leftEdgeX = camera.target.x - (256.0f / 2.0f);
                 Vector2 newPos = map->GetSafeRespawnPosition(leftEdgeX, enemies);
                 player->TriggerRespawn(newPos);
+                if (sound) sound->PlayTheme();
             }
         }
     }
@@ -251,7 +266,7 @@ void GameManager::Update() {
     sound->Update();
     
     // Update Player with Map collision
-    player->Update(dt, *map);
+    player->Update(dt, *map, sound);
     
     // Check for falling off map (Y > WORLD_HEIGHT)
     if (player->GetPosition().y > 192) { // 192 is the screen/world height based on camera logic
@@ -269,6 +284,19 @@ void GameManager::Update() {
     UpdateCamera();
     CullOffscreen();
 
+    // Update Enemies
+    for (int i = (int)enemies.size() - 1; i >= 0; i--) {
+        enemies[i]->Update(dt, *map);
+        
+        // Collision: Player Punch vs Enemy (Plant, Lava, and Quicksand are invincible)
+        if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
+            if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT && enemies[i]->GetType() != EnemyType::QUICKSAND) {
+                if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
+                    score += 200; 
+                    std::cout << "You gained 200 points by killing an enemy! Total points: " << score << std::endl;
+                    enemies[i]->Die();
+                    if (sound) sound->PlayEnemyDeath();
+                    player->DeactivateAttackHitbox();
     // Update Enemies (Only if NOT in shop)
     if (map->GetCurrentLevel() != 3) {
         for (int i = (int)enemies.size() - 1; i >= 0; i--) {
@@ -322,6 +350,13 @@ void GameManager::Update() {
         if (res.tileID != 0) {
             player->DeactivateAttackHitbox(); // FIX A: Deactivate immediately
             
+            // Play appropriate sound
+            if (res.tileID == 22) {
+                if (sound) sound->PlayStarBlockBreak();
+            } else {
+                if (sound) sound->PlayBlockBreak();
+            }
+
             // Task 2: Star Block (Tile 22)
             if (res.tileID == 22) {
                 int newMoneyType = (GetRandomValue(0, 1) == 0) ? 3 : 21; // 3 = Big, 21 = Small
@@ -355,6 +390,7 @@ void GameManager::Update() {
             
             // Task 3: Stun Block (Tile 23)
             if (res.tileID == 23) {
+                if (sound) sound->PlayStarBlockBreak();
                 player->TriggerStun();
             }
         }
@@ -402,6 +438,7 @@ void GameManager::Update() {
                 score += 100;
                 std::cout << "Picked up " << amount << " money. Total: " << playerMoney << std::endl;
                 std::cout << "You gained 100 points by collecting money! Total points: " << score << std::endl;
+                if (sound) sound->PlayCoin();
                 droppedItems.erase(droppedItems.begin() + i);
             }
         }
@@ -418,6 +455,7 @@ void GameManager::Update() {
             score += 100;
             std::cout << "Picked up " << amount << " money from map. Total: " << playerMoney << std::endl;
             std::cout << "You gained 100 points by collecting money! Total points: " << score << std::endl;
+            if (sound) sound->PlayCoin();
         }
         
         // Onigiri (Tile 25) Advances to next level

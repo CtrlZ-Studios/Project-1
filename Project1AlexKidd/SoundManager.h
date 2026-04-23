@@ -11,9 +11,28 @@ public:
     void Update(); // To update music stream
     void PlayTheme();
 
+    void PlayJump();
+    void PlayPunch();
+    void PlayCoin();
+    void PlayPlayerDeath();
+    void PlayEnemyDeath();
+    void PlayBlockBreak();
+    void PlayStarBlockBreak();
+    void StopTheme();
+    void PlayGameOver();
+
 private:
     Music themeMusic;
     bool musicLoaded;
+
+    Sound jumpSound;
+    Sound punchSound;
+    Sound coinSound;
+    Sound playerDeathSound;
+    Sound enemyDeathSound;
+    Sound blockBreakSound;
+    Sound starBlockBreakSound;
+    Sound gameOverSound;
 };
 
 #endif // SOUND_MANAGER_H

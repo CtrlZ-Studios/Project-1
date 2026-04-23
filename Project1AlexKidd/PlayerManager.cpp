@@ -78,7 +78,7 @@ Rectangle PlayerManager::GetHitbox() const {
     };
 }
 
-void PlayerManager::Update(float deltaTime, const MapManager& map) {
+void PlayerManager::Update(float deltaTime, const MapManager& map, SoundManager* sound) {
     if (state == PlayerState::DYING) {
         position.y += velocity.y * deltaTime; // Float upwards
         frameTimer += deltaTime;
@@ -240,6 +240,7 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
                 velocity.y = (jumpForceStanding + jumpForceMoving) / 2.0f;
             }
             isGrounded = false;
+            if (sound) sound->PlayJump();
         }
         if (!isGrounded && velocity.y < 0) {
             if (IsKeyReleased(KEY_SPACE) || IsKeyReleased(KEY_W)) {
@@ -250,6 +251,7 @@ void PlayerManager::Update(float deltaTime, const MapManager& map) {
             attackTimer = 0.2f;
             attackHitboxActive = true;
             if (isGrounded) velocity.x = 0;
+            if (sound) sound->PlayPunch();
         }
     }
 
