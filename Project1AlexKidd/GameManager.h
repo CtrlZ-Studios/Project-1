@@ -96,7 +96,39 @@ private:
     const float pauseMoneyOffsetX = 70.0f;
     const float pauseMoneyOffsetY = 155.0f;
 
+    // --- Shop Dialogue ---
+    enum class ShopDialogue { WELCOME, SHORT_OF_MONEY, THANK_YOU };
+    ShopDialogue currentShopDialogue = ShopDialogue::WELCOME;
+
+    // Offset constants (tweak freely)
+    const float shopDialogueY = 32.0f; // vertical center of box
+    const float shopDialoguePadding = 6.0f;
+    const int shopDialogueFontSize = 8;
+
+    // --- Level 1 Story Dialogue ---
+    bool storyDialogueActive = false;
+    bool storyDialogueTriggered = false; // so it only fires once
+    bool storyDialoguePreviousFrameHadInput = false;
+
+    const char* storyDialogueText =
+        "WELCOME, ALEX. YOU ARE A \n"
+        "PRINCE FROM THE COUNTRY OF\n"
+        "RADAXIAN, WHO WAS KIDNAPPED\n" 
+        "BY EVIL MEN WHEN YOU WERE\n"
+        "BUT A SMALL BOY. YOUR NATIVE\n" 
+        "LAND IS NOW BEING GROSSLY\n"
+        "MISGOVERNED BY THE TYRANT,\n"
+        "\"JANKEN THE GREAT.\" YOUR\n"
+        "MISSION IS TO SAVE THE\n"
+        "POPULACE FROM HIM.";
+
+    const int storyDialogueMargin = 16;
+    const int storyDialogueFontSize = 8;
+    const int storyDialogueLineSpacing = 12;
+
     void DrawPauseMenu(float deltaTime);
+    void DrawShopDialogue();
+    void DrawStoryDialogue();
 };
 
 #endif // GAME_MANAGER_H

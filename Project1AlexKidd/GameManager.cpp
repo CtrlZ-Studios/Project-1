@@ -86,6 +86,7 @@ void GameManager::SpawnEnemies(bool returningFromShop) {
 
 void GameManager::EnterShop() {
     previousLevel = map->GetCurrentLevel();
+    currentShopDialogue = ShopDialogue::WELCOME;
     // Don't ClearEnemies() here to allow them to persist (we just stop updating/drawing them)
     map->LoadLevel(3);
     player->GetPosition() = { 1 * 16.0f, 9 * 16.0f }; // 2nd block, 3rd row from bottom
@@ -114,6 +115,11 @@ void GameManager::RestartLevel() {
     droppedItems.clear();
 
     SpawnEnemies();
+
+    // Reset story dialogue
+    storyDialogueTriggered = false;
+    storyDialogueActive = false;
+    storyDialoguePreviousFrameHadInput = false;
 }
 
 void GameManager::PlayerDied() {
@@ -170,6 +176,25 @@ void GameManager::CullOffscreen() {
 }
 
 void GameManager::Update() {
+    // --- Level 1 Story Dialogue Trigger ---
+    if (map->GetCurrentLevel() == 1 && !storyDialogueTriggered) {
+        float playerX = player->GetPosition().x;
+        if (playerX >= 1120.0f) { // 70 * 16
+            storyDialogueTriggered = true;
+            storyDialogueActive = true;
+            storyDialoguePreviousFrameHadInput = true; // Assume something was held
+        }
+    }
+
+    // If story dialogue is active, freeze everything and wait for NEW input
+    if (storyDialogueActive) {
+        // GetKeyPressed() returns the keycode of a key pressed this frame (not held)
+        if (GetKeyPressed() != 0) {
+            storyDialogueActive = false;
+        }
+        return; // freeze all game logic
+    }
+
     // --- Pause Menu ---
     int currentLevel = map->GetCurrentLevel();
     bool pauseAllowed = (currentLevel == 1 || currentLevel == 2 || currentLevel == 3);
@@ -513,7 +538,10 @@ void GameManager::Update() {
                             playerMoney -= 100;
                             lives++;
                             shop1UpBought = true;
+                            currentShopDialogue = ShopDialogue::THANK_YOU;
                             std::cout << "Bought 1UP! Lives: " << lives << " Money: " << playerMoney << std::endl;
+                        } else {
+                            currentShopDialogue = ShopDialogue::SHORT_OF_MONEY;
                         }
                     }
                 } else if (tid == 43) { // Exit Sign
@@ -649,6 +677,16 @@ void GameManager::Draw() {
             // Start at the right edge of the box, push left by the text's width and a 2px padding
             DrawText(moneyStr.c_str(), (int)(boxX + boxW - textW - 2), (int)boxY - 1, fontSize, WHITE);
         }
+
+        EndMode2D();
+        DrawShopDialogue();
+        BeginMode2D(camera);
+    }
+
+    if (storyDialogueActive) {
+        EndMode2D();
+        DrawStoryDialogue();
+        BeginMode2D(camera);
     }
 
     if (isPaused) {
@@ -691,4 +729,67 @@ void GameManager::DrawPauseMenu(float deltaTime) {
 
     const char* moneyStr = TextFormat("%d", playerMoney);
     DrawText(moneyStr, (int)pauseMoneyOffsetX, (int)pauseMoneyOffsetY, 10, WHITE);
+}
+
+void GameManager::DrawShopDialogue() {
+    const char* msg = "";
+    if (currentShopDialogue == ShopDialogue::WELCOME)
+        msg = "WELCOME! PLEASE BUY\n THE THINGS THAT YOU LIKE.";
+    else if (currentShopDialogue == ShopDialogue::SHORT_OF_MONEY)
+        msg = "YOU ARE SHORT OF MONEY, AREN'T YOU?";
+    else if (currentShopDialogue == ShopDialogue::THANK_YOU)
+        msg = "THANK YOU.";
+
+    int fontSize = shopDialogueFontSize;
+    float pad = shopDialoguePadding;
+
+    // --- Split text into lines ---
+    int lineCount = 0;
+    const char** lines = TextSplit(msg, '\n', &lineCount);
+
+    // --- Calculate width (longest line) ---
+    int textW = 0;
+    for (int i = 0; i < lineCount; i++) {
+        int w = MeasureText(lines[i], fontSize);
+        if (w > textW) textW = w;
+    }
+
+    // --- Calculate height properly (then double it) ---
+    float boxW = textW + pad * 2;
+    float boxH = (lineCount * fontSize) + (lineCount - 1) * 2 + pad * 2;
+    float boxX = (256.0f - boxW) / 2.0f;
+    float boxY = shopDialogueY - boxH / 2.0f;
+
+    // --- Draw box ---
+    DrawRectangle((int)boxX, (int)boxY, (int)boxW, (int)boxH, BLACK);
+
+    // --- Draw text (proper multi-line) ---
+    int startY = (int)(boxY + pad);
+
+    for (int i = 0; i < lineCount; i++) {
+        DrawText(lines[i], (int)(boxX + pad), startY + i * (fontSize + 2), fontSize, WHITE);
+    }
+}
+
+void GameManager::DrawStoryDialogue() {
+    int margin = storyDialogueMargin;
+    int fontSize = storyDialogueFontSize;
+    int lineSpacing = storyDialogueLineSpacing;
+
+    // Full screen black box with margin
+    DrawRectangle(margin, margin, 256 - margin * 2, 192 - margin * 2, BLACK);
+    DrawRectangleLinesEx({(float)margin, (float)margin,
+        (float)(256 - margin*2), (float)(192 - margin*2)}, 1, WHITE);
+
+    // Draw each line manually (split on \n)
+    // Start text a few pixels inside the box
+    int textX = margin + 6;
+    int textY = margin + 8;
+
+    const char* text = storyDialogueText;
+    int lineCount = 0;
+    const char** lines = TextSplit(text, '\n', &lineCount);
+    for (int i = 0; i < lineCount; i++) {
+        DrawText(lines[i], textX, textY + i * lineSpacing, fontSize, WHITE);
+    }
 }
