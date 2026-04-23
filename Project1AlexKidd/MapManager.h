@@ -38,6 +38,7 @@ public:
     void DrawBackground();
     void DrawTiles(bool shop1UpBought = false);
     void DrawForeground();
+    void DrawMainMenu(float menuTimer, int colorVariant);
     void DrawTile(int tileID, Vector2 position, bool shop1UpBought = false);
     void LoadLevel(int levelIndex, bool returningFromShop = false);
     InteractionResult InteractWithMap(Rectangle hitbox, int interactionType);
@@ -66,6 +67,13 @@ private:
     Texture2D tileset;
     Texture2D shopTex, doorTex, shopInteriorTex, oneUpTex, exitTex;
     bool tilesetLoaded;
+
+    // Main Menu Textures
+    Texture2D titlescreen, starttitle, redtitle, greentitle, yellowtitle, enemytitle, flytitle, boattitle, swimtitle, treetitle;
+    bool menuTexturesLoaded;
+    void LoadMenuTextures();
+    void UnloadMenuTextures();
+
     int currentLevel;
     int currentCols;
     int currentRows;

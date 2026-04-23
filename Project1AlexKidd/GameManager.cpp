@@ -5,13 +5,14 @@
 
 GameManager::GameManager() {
     map = new MapManager();   // Map first, so spawn point is ready
+    map->LoadLevel(0);        // Task: Start at Level 0 (Main Menu)
     player = new PlayerManager(map->GetSpawnPosition());
     sound = new SoundManager();
     
     // Initialize Camera
     camera = { 0 };
     camera.offset = { 256 / 2.0f, 192 / 2.0f };
-    camera.target = { player->GetPosition().x, 144.0f }; // Centered on ground rows (13, 14)
+    UpdateCamera();
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
     
@@ -21,6 +22,11 @@ GameManager::GameManager() {
     droppedItems.clear();
 
     SpawnEnemies();
+
+    // Menu state initialization
+    menuTimer = 0.0f;
+    menuColorVariant = 0;
+    menuFlickerTimer = 0.0f;
 }
 
 GameManager::~GameManager() {
@@ -104,7 +110,7 @@ void GameManager::PlayerDied() {
 }
 
 void GameManager::UpdateCamera() {
-    if (map->GetCurrentLevel() == 3) {
+    if (map->GetCurrentLevel() == 3 || map->GetCurrentLevel() == 0) {
         // Lock camera perfectly to the center of the 256x192 room
         camera.target.x = 128.0f;
         camera.target.y = 96.0f; 
@@ -146,6 +152,31 @@ void GameManager::CullOffscreen() {
 }
 
 void GameManager::Update() {
+    if (map->GetCurrentLevel() == 0) {
+        float dt = GetFrameTime();
+        if (dt > 0.05f) dt = 0.05f;
+
+        menuTimer += dt;
+        
+        const float MENU_STEP_INTERVAL = 0.2f;
+        const float MENU_FLICKER_RATE  = 0.05f;
+
+        if (menuTimer >= 0.5f + 6 * MENU_STEP_INTERVAL) {
+            menuFlickerTimer += dt;
+            if (menuFlickerTimer >= MENU_FLICKER_RATE) {
+                menuFlickerTimer = 0;
+                menuColorVariant = (menuColorVariant + 1) % 3; // red, green, yellow
+            }
+        }
+
+        if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_J)) {
+            map->LoadLevel(1);
+            RestartLevel();
+        }
+        UpdateCamera();
+        return;
+    }
+
     if (isGameOver) {
         if (IsKeyPressed(KEY_SPACE)) {
             lives = 3;
@@ -433,6 +464,11 @@ void GameManager::Update() {
 }
 
 void GameManager::Draw() {
+    if (map->GetCurrentLevel() == 0) {
+        map->DrawMainMenu(menuTimer, menuColorVariant);
+        return;
+    }
+
     if (isGameOver) {
         ClearBackground(BLACK);
 

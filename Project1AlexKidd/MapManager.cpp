@@ -59,7 +59,7 @@ static const int LEVEL_3_DATA[12][16] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
-MapManager::MapManager() : tilesetLoaded(false), currentLevel(1), currentCols(MAP_COLS), currentRows(MAP_ROWS) {
+MapManager::MapManager() : tilesetLoaded(false), menuTexturesLoaded(false), currentLevel(1), currentCols(MAP_COLS), currentRows(MAP_ROWS) {
     tileset = LoadTexture("Sprites/tileset.png");
     if (tileset.id != 0) tilesetLoaded = true;
 
@@ -85,12 +85,25 @@ MapManager::~MapManager() {
     UnloadTexture(shopInteriorTex);
     UnloadTexture(oneUpTex);
     UnloadTexture(exitTex);
+    UnloadMenuTextures();
 }
 
 void MapManager::LoadLevel(int levelIndex, bool returningFromShop) {
+    if (currentLevel == 0 && levelIndex != 0) {
+        UnloadMenuTextures();
+    }
+
     currentLevel = levelIndex;
     enemySpawns.clear();
     std::memset(mapData, 0, sizeof(mapData));
+
+    if (levelIndex == 0) {
+        LoadMenuTextures();
+        currentCols = 16;
+        currentRows = 12;
+        spawnPosition = { 0, 0 };
+        return;
+    }
 
     if (levelIndex == 3) {
         currentCols = 16;
@@ -415,5 +428,82 @@ Vector2 MapManager::GetSafeRespawnPosition(float leftCameraX, const std::vector<
         }
     }
     return GetSpawnPosition(); // Fallback to map start if no safe space exists
+}
+
+
+void MapManager::LoadMenuTextures() {
+    if (menuTexturesLoaded) return;
+    titlescreen = LoadTexture("Sprites/MainMenu/titlescreen.png");
+    starttitle = LoadTexture("Sprites/MainMenu/starttitle.png");
+    redtitle = LoadTexture("Sprites/MainMenu/redtitle.png");
+    greentitle = LoadTexture("Sprites/MainMenu/greentitle.png");
+    yellowtitle = LoadTexture("Sprites/MainMenu/yellowtitle.png");
+    enemytitle = LoadTexture("Sprites/MainMenu/enemytitle.png");
+    flytitle = LoadTexture("Sprites/MainMenu/flytitle.png");
+    boattitle = LoadTexture("Sprites/MainMenu/boattitle.png");
+    swimtitle = LoadTexture("Sprites/MainMenu/swimtitle.png");
+    treetitle = LoadTexture("Sprites/MainMenu/treetitle.png");
+    
+    SetTextureFilter(titlescreen, TEXTURE_FILTER_POINT);
+    SetTextureFilter(starttitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(redtitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(greentitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(yellowtitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(enemytitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(flytitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(boattitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(swimtitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(treetitle, TEXTURE_FILTER_POINT);
+    
+    menuTexturesLoaded = true;
+}
+
+void MapManager::UnloadMenuTextures() {
+    if (!menuTexturesLoaded) return;
+    UnloadTexture(titlescreen);
+    UnloadTexture(starttitle);
+    UnloadTexture(redtitle);
+    UnloadTexture(greentitle);
+    UnloadTexture(yellowtitle);
+    UnloadTexture(enemytitle);
+    UnloadTexture(flytitle);
+    UnloadTexture(boattitle);
+    UnloadTexture(swimtitle);
+    UnloadTexture(treetitle);
+    menuTexturesLoaded = false;
+}
+
+void MapManager::DrawMainMenu(float menuTimer, int colorVariant) {
+    if (!menuTexturesLoaded) return;
+
+    const float MENU_STEP_INTERVAL = 0.2f;
+    const Vector2 POS_SWIM     = { 167, 7   };
+    const Vector2 POS_BOAT     = { 103, 119 };
+    const Vector2 POS_TREE     = { 8,   7  };
+    const Vector2 POS_FLY      = { 215, 63  };
+    const Vector2 POS_ENEMY    = { 8,   71  };
+    const Vector2 POS_TITLE    = { 61,  16  };
+
+    // Draw background
+    if (menuTimer >= 0.5f + 5 * MENU_STEP_INTERVAL) {
+        DrawTexture(starttitle, 0, 0, WHITE);
+    } else {
+        DrawTexture(titlescreen, 0, 0, WHITE);
+    }
+
+    // Reveal stages (back to front order relative to each other)
+    if (menuTimer >= 0.5f) DrawTexture(swimtitle, (int)POS_SWIM.x, (int)POS_SWIM.y, WHITE);
+    if (menuTimer >= 0.5f + 1 * MENU_STEP_INTERVAL) DrawTexture(boattitle, (int)POS_BOAT.x, (int)POS_BOAT.y, WHITE);
+    if (menuTimer >= 0.5f + 2 * MENU_STEP_INTERVAL) DrawTexture(treetitle, (int)POS_TREE.x, (int)POS_TREE.y, WHITE);
+    if (menuTimer >= 0.5f + 3 * MENU_STEP_INTERVAL) DrawTexture(flytitle, (int)POS_FLY.x, (int)POS_FLY.y, WHITE);
+    if (menuTimer >= 0.5f + 4 * MENU_STEP_INTERVAL) DrawTexture(enemytitle, (int)POS_ENEMY.x, (int)POS_ENEMY.y, WHITE);
+
+    // Color title (flicker)
+    Texture2D currentTitle = redtitle;
+    if (menuTimer >= 0.5f + 6 * MENU_STEP_INTERVAL) {
+        if (colorVariant == 1) currentTitle = greentitle;
+        else if (colorVariant == 2) currentTitle = yellowtitle;
+    }
+    DrawTexture(currentTitle, (int)POS_TITLE.x, (int)POS_TITLE.y, WHITE);
 }
 

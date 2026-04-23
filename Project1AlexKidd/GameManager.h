@@ -59,6 +59,11 @@ private:
     int score = 0;
     int previousLevel = 1;
     bool isGameOver = false;
+
+    // Menu System (Level 0)
+    float menuTimer = 0.0f;
+    int menuColorVariant = 0;
+    float menuFlickerTimer = 0.0f;
 };
 
 #endif // GAME_MANAGER_H
