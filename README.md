@@ -1,39 +1,68 @@
-README
+# Project 1
 
-Link to the github.com page:<br/>
+## Repository
+GitHub: https://github.com/CtrlZ-Studios/Project-1
+1 minute gameplay video: 
 
-Implemented features (YouTube link)<br/><br/>
+## Team Members
+- Shaheer Ali (Shaheer-A-W)
+- Camille Lugo (camilleI1)
+- Javier Jiménez (javierjm06)
+- Aran Estera (Aran-Estera-Puig)
 
-Shaheer Ali (Shaheer-A-W)<br/>
-Camille lugo (camilleI1)<br/>
-Javier Jiménez (javierjm06)<br/>
-Aran Estera (Aran-Estera-Puig)<br/><br/>
+## Game Description
+*Alex Kidd in Miracle World* is a classic side-scrolling platform game released by Sega in 1986 for the Sega Master System.
 
-Description of the game (short):<br/><br/>
-Alex Kidd in Miracle World is a classic side-scrolling platform game released by Sega in 1986 for the Sega Master System.<br/><br/>
+The player controls Alex Kidd, a young martial artist on a mission to save the kingdom of Radaxian. Throughout the game, players explore different levels and defeat enemies using punches.
 
-Where the player controls Alex Kidd, a young martial artist on a mission to save the kingdom of Radaxian. Throught the game, players must explore different levels, defeat enemies using punches, and overcome obstacles using special items. One of the game's most unique mechanics is the rock-paper-scissors battles used to defeat the bosses.<br/><br/>
+## How to Play
+A classic platform game where you:
+- Move, jump, and punch enemies
+- Break blocks to collect money and items
+- Buy items in shops
 
-How to play:<br/><br/>
-A classic platform game; where you move, jump, and punch enemies; break blocks to collect money and items; buy tools and vehicles; and play special levels with a motorcycle, helicopter, and boat; boss fights often use rock paper scissors instead of normal combat; and the game is challenging, with instant death and precise timing required; overall, it has simple controls, but unique and difficult gameplay for its time.<br/><br/>
+The game is challenging, featuring instant death and requiring precise timing. It has simple controls but difficult gameplay.
 
-Controls:<br/><br/>
-To control the character you need to use WASD to move.<br/>
+## Controls
 
-W: To jump.<br/>
-A: To move to the left.<br/>
-S: To crouch.<br/>
-D: To move to the right.<br/>
+### Movement
+- **W**: Jump  
+- **A**: Move left  
+- **S**: Crouch  
+- **D**: Move right  
 
-Spacebar: Enter/exit the store and buy the items in the store. Exit win/lose screens aswell as main menu.<br/>
-J: To make a punch.<br/>
+### Actions
+- **Spacebar**: Enter/exit store, buy items, exit main menu, game over screen, game won screen and initial credits screen.  
+- **J**: Punch  
+- **Enter**: Open/close pause menu  
 
-F1: To see the hiboxes of the player and the enemies.<br/>
-F2: To reset the entire game (hard reset).<br/>
-F3: To reset the actual level.<br/>
-F4: To load the first level.<br/>
-F5: To load the second level.<br/>
-F6: To kill and respawn the character.<br/>
-F7: To gain invincibility and is deactivated once you hit the button again.<br/><br/>
+### Debug Controls (DEBUG build only)
+- **F1**: Show hitboxes  
+- **F2**: Hard reset game  
+- **F3**: Reset current level  
+- **F4**: Load level 1  
+- **F5**: Load level 2  
+- **F6**: Kill and respawn character  
+- **F7**: Toggle invincibility  
 
-Features implemented (list):<br/><br/><br/>
+## Features Implemented
+- Floaty movement with momentum inspired by *Alex Kidd in Miracle World*
+- Crouching beneath blocks mechanic 
+- Main menu
+- Enemies: Frog, Bird, Scorpion, Lava, Plant, Quicksand
+- Destroyable blocks:
+  - Star blocks (drop money)
+  - Stun blocks
+  - Blue blocks
+  - Boulder blocks
+- Non-destroyable blocks: Red blocks
+- Appropriate music for each screen
+- Sound effects for actions
+- Pause menu
+- Game over screen
+- Victory screen
+- Decorative tiles
+- Money, score, and lives systems
+- UI for shop and pause menu
+- Resizable window
+- Dialogue boxes
