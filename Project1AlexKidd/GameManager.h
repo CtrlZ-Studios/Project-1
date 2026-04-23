@@ -59,6 +59,7 @@ private:
     int score = 0;
     int previousLevel = 1;
     bool isGameOver = false;
+    bool gameWon = false;
 
     // Menu System (Level 0)
     float menuTimer = 0.0f;

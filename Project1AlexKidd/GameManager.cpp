@@ -152,6 +152,46 @@ void GameManager::CullOffscreen() {
 }
 
 void GameManager::Update() {
+    // Global Debug Keys (Always active)
+    if (IsKeyPressed(KEY_F1)) {
+        showDebugHitboxes = !showDebugHitboxes;
+    }
+    if (IsKeyPressed(KEY_F2)) {
+        playerMoney = 0;
+        map->LoadLevel(1);
+        RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F3)) {
+        RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F4)) {
+        map->LoadLevel(1);
+        RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F5)) {
+        map->LoadLevel(2);
+        RestartLevel();
+    }
+    if (IsKeyPressed(KEY_F6)) {
+        PlayerDied();
+    }
+    if (IsKeyPressed(KEY_F7)) {
+        player->TogglePermInvincibility();
+    }
+
+    if (gameWon) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            gameWon = false;
+            map->LoadLevel(0); // Return to Main Menu
+            // Add any score/money resets here if necessary
+            lives = 3;
+            score = 0;
+            playerMoney = 0;
+            shop1UpBought = false;
+        }
+        return; // Freeze game logic while win screen is up
+    }
+
     if (map->GetCurrentLevel() == 0) {
         float dt = GetFrameTime();
         if (dt > 0.05f) dt = 0.05f;
@@ -169,7 +209,7 @@ void GameManager::Update() {
             }
         }
 
-        if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_J)) {
+        if (IsKeyPressed(KEY_SPACE)) {
             map->LoadLevel(1);
             RestartLevel();
         }
@@ -205,34 +245,6 @@ void GameManager::Update() {
                 player->TriggerRespawn(newPos);
             }
         }
-    }
-
-    if (IsKeyPressed(KEY_F1)) {
-        showDebugHitboxes = !showDebugHitboxes;
-    }
-
-    // Task 2: Debug Keybinds
-    if (IsKeyPressed(KEY_F2)) {
-        playerMoney = 0;
-        map->LoadLevel(1);
-        RestartLevel();
-    }
-    if (IsKeyPressed(KEY_F3)) {
-        RestartLevel();
-    }
-    if (IsKeyPressed(KEY_F4)) {
-        map->LoadLevel(1);
-        RestartLevel();
-    }
-    if (IsKeyPressed(KEY_F5)) {
-        map->LoadLevel(2);
-        RestartLevel();
-    }
-    if (IsKeyPressed(KEY_F6)) {
-        PlayerDied();
-    }
-    if (IsKeyPressed(KEY_F7)) {
-        player->TogglePermInvincibility();
     }
 
     // Update Sound (Music Stream)
@@ -418,6 +430,10 @@ void GameManager::Update() {
             RestartLevel();
             return;
         }
+
+        if (collectRes.tileID == 50) {
+            gameWon = true;
+        }
     }
 
     // Shop Interactions
@@ -486,6 +502,18 @@ void GameManager::Draw() {
         DrawText(scoreStr.c_str(), centerX - (scoreWidth / 2), centerY + 10, 10, WHITE);
 
         return; 
+    }
+
+    if (gameWon) {
+        DrawRectangle(camera.target.x - 200, camera.target.y - 150, 400, 300, { 0, 0, 0, 150 });
+        const char* gameWonText = "Game Won!";
+        int gwWidth = MeasureText(gameWonText, 20);
+        DrawText(gameWonText, camera.target.x - (gwWidth / 2), camera.target.y - 20, 20, GOLD);
+
+        std::string scoreStr = "Score: " + std::to_string(score);
+        int scoreWidth = MeasureText(scoreStr.c_str(), 10);
+        DrawText(scoreStr.c_str(), camera.target.x - (scoreWidth / 2), camera.target.y + 10, 10, WHITE);
+        return;
     }
 
     // 1. Sky Layer
