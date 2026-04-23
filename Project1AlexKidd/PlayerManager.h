@@ -89,6 +89,7 @@ private:
     const float maxMoveSpeed = 120.0f;
     const float moveAcceleration = 1000.0f;
     const float groundFriction = 480.0f;
+    const float airFriction = 300.0f;
     
     // -- UPDATED FOR FLOATY AIR TIME --
     const float gravity = 450.0f; // Lowered from 800 for more air-time
