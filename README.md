@@ -10,8 +10,11 @@ Javier Jiménez (javierjm06)<br/>
 Aran Estera (Aran-Estera-Puig)<br/><br/>
 
 Description of the game (short):<br/><br/><br/>
+Alex Kidd in Miracle World is a classic side-scrolling platform game released by Sega in 1986 for the Sega Master System.<br/><br/>
 
+Where the player controls Alex Kidd, a young martial artist on a mission to save the kingdom of Radaxian. Throught the game, players must explore different levels, defeat enemies using punches, and overcome obstacles using special items. One of the game's most unique mechanics is the rock-paper-scissors battles used to defeat the bosses.<br/>
 How to play:<br/><br/><br/>
+A classic platform game; where you move, jump, and punch enemies; break blocks to collect money and items; buy tools and vehicles; and play special levels with a motorcycle, helicopter, and boat; boss fights often use rock paper scissors instead of normal combat; and the game is challenging, with instant death and precise timing required; overall, it has simple controls, but unique and difficult gameplay for its time.<br/><br/>
 
 Controls:<br/><br/>
 To control the character you need to use WASD to move.<br/>
