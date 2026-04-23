@@ -45,13 +45,13 @@ static const int LEVEL_2_DATA[MAP_ROWS][MAP2_COLS] = {
 };
 
 static const int LEVEL_3_DATA[12][16] = {
-    {41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {41,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 43, 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0,43, 0, 0, 0, 0,42, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0,99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -280,6 +280,7 @@ void MapManager::DrawTile(int tileID, Vector2 position, bool shop1UpBought) {
         case 37: source = {16, 272, 16, 16}; break; // Castle's right old man tile
         case 38: source = {0, 288, 32, 40}; break; // Castle's top piece
         case 50: source = {16, 192, 16, 16}; break; // Last Onigiri tile
+        case 99: return;
     }
     DrawTextureRec(tileset, source, position, WHITE);
 }

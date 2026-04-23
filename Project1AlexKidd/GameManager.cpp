@@ -580,19 +580,22 @@ void GameManager::Draw() {
             float boxW = shopUIWidthBlocks * TILE_SIZE;
             float boxH = shopUIHeightBlocks * TILE_SIZE;
 
-            // Draw Blue background (SKYBLUE is built into Raylib)
-            DrawRectangle((int)boxX, (int)boxY, (int)boxW, (int)boxH, SKYBLUE);
+            // Custom retro sky blue color (matches the tile at 16x 16y)
+            Color customSkyBlue = { 0, 0, 255, 255 }; 
 
-            // Draw Yuan symbol aligned to the left
+            // Draw custom background color
+            DrawRectangle((int)boxX, (int)boxY, (int)boxW, (int)boxH, customSkyBlue);
+
+            // Draw Yuan symbol (Moved UP by 1 pixel)
             int fontSize = 10;
-            DrawText("¥", (int)boxX + 2, (int)boxY, fontSize, WHITE);
+            DrawText("¥", (int)boxX + 2, (int)boxY - 1, fontSize, WHITE);
 
-            // Draw right-aligned money
+            // Draw right-aligned money (Moved UP by 1 pixel)
             std::string moneyStr = std::to_string(playerMoney);
             int textW = MeasureText(moneyStr.c_str(), fontSize);
 
             // Start at the right edge of the box, push left by the text's width and a 2px padding
-            DrawText(moneyStr.c_str(), (int)(boxX + boxW - textW - 2), (int)boxY, fontSize, WHITE);
+            DrawText(moneyStr.c_str(), (int)(boxX + boxW - textW - 2), (int)boxY - 1, fontSize, WHITE);
         }
     }
 }
