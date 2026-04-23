@@ -2,7 +2,7 @@
 
 ## Repository
 GitHub: https://github.com/CtrlZ-Studios/Project-1
-1 minute gameplay video: 
+1 minute gameplay video: https://youtu.be/sq6yD8SlKvo
 
 ## Team Members
 - Shaheer Ali (Shaheer-A-W)
