@@ -27,6 +27,13 @@ GameManager::GameManager() {
     menuTimer = 0.0f;
     menuColorVariant = 0;
     menuFlickerTimer = 0.0f;
+
+    // Load Pause Menu Textures
+    pauseMapTex = LoadTexture("Sprites/pausemap.png");
+    pauseLvl1Tex = LoadTexture("Sprites/pauselvl1.png");
+    pauseLvl2Tex = LoadTexture("Sprites/pauselvl2.png");
+    pauseUiTex = LoadTexture("Sprites/pauseui.png");
+    pauseTexturesLoaded = true;
 }
 
 GameManager::~GameManager() {
@@ -34,6 +41,13 @@ GameManager::~GameManager() {
     delete map;
     delete sound;
     ClearEnemies();
+
+    if (pauseTexturesLoaded) {
+        UnloadTexture(pauseMapTex);
+        UnloadTexture(pauseLvl1Tex);
+        UnloadTexture(pauseLvl2Tex);
+        UnloadTexture(pauseUiTex);
+    }
 }
 
 void GameManager::ClearEnemies(bool returningFromShop) {
@@ -156,6 +170,18 @@ void GameManager::CullOffscreen() {
 }
 
 void GameManager::Update() {
+    // --- Pause Menu ---
+    int currentLevel = map->GetCurrentLevel();
+    bool pauseAllowed = (currentLevel == 1 || currentLevel == 2 || currentLevel == 3);
+
+    if (pauseAllowed && IsKeyPressed(KEY_ENTER)) {
+        isPaused = !isPaused;
+        pauseFlickerTimer = 0.0f;
+        pauseFlickerState = false;
+    }
+
+    if (isPaused) return; // Freeze everything
+
     // Global Debug Keys (Always active)
     if (IsKeyPressed(KEY_F1)) {
         showDebugHitboxes = !showDebugHitboxes;
@@ -624,4 +650,45 @@ void GameManager::Draw() {
             DrawText(moneyStr.c_str(), (int)(boxX + boxW - textW - 2), (int)boxY - 1, fontSize, WHITE);
         }
     }
+
+    if (isPaused) {
+        EndMode2D(); // Switch to screen space (0,0 to 256,192)
+        DrawPauseMenu(GetFrameTime());
+        BeginMode2D(camera); // Restore camera for the caller (main.cpp)
+    }
+}
+
+void GameManager::DrawPauseMenu(float deltaTime) {
+    // --- Advance flicker timer ---
+    pauseFlickerTimer += deltaTime;
+    if (pauseFlickerTimer >= pauseFlickerInterval) {
+        pauseFlickerTimer -= pauseFlickerInterval;
+        pauseFlickerState = !pauseFlickerState;
+    }
+
+    // --- Draw map region (256x137 at position 0,0) ---
+    int currentLevel = map->GetCurrentLevel();
+
+    Texture2D* flickerTex = &pauseMapTex;
+    if (pauseFlickerState) {
+        if (currentLevel == 1) flickerTex = &pauseLvl1Tex;
+        else if (currentLevel == 2) flickerTex = &pauseLvl2Tex;
+        // For level 3 (shop) or others, fall back to pauseMapTex
+    }
+
+    DrawTexture(*flickerTex, 0, 0, WHITE);
+
+    // --- Draw UI region (256x55 at position 0, 137) ---
+    DrawTexture(pauseUiTex, 0, 137, WHITE);
+
+    // --- Draw text over UI ---
+    // Font size 10 is raylib's default. Coordinates are screen-space.
+    const char* livesStr = TextFormat("%d", lives);
+    DrawText(livesStr, (int)pauseLivesOffsetX, (int)pauseLivesOffsetY, 10, WHITE);
+
+    const char* scoreStr = TextFormat("%d", score);
+    DrawText(scoreStr, (int)pauseScoreOffsetX, (int)pauseScoreOffsetY, 10, WHITE);
+
+    const char* moneyStr = TextFormat("%d", playerMoney);
+    DrawText(moneyStr, (int)pauseMoneyOffsetX, (int)pauseMoneyOffsetY, 10, WHITE);
 }

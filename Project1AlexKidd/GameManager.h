@@ -72,6 +72,31 @@ private:
     float menuTimer = 0.0f;
     int menuColorVariant = 0;
     float menuFlickerTimer = 0.0f;
+
+    // --- Pause Menu ---
+    bool isPaused = false;
+
+    // Pause textures
+    Texture2D pauseMapTex;      // Sprites/pausemap.png
+    Texture2D pauseLvl1Tex;     // Sprites/pauselvl1.png
+    Texture2D pauseLvl2Tex;     // Sprites/pauselvl2.png
+    Texture2D pauseUiTex;       // Sprites/pauseui.png
+    bool pauseTexturesLoaded = false;
+
+    // Flicker state
+    float pauseFlickerTimer = 0.0f;
+    const float pauseFlickerInterval = 0.5f; // seconds between flicker swap
+    bool pauseFlickerState = false;           // false = pausemap, true = pauselvl
+
+    // Text offsets (tweak these values freely later)
+    const float pauseLivesOffsetX = 70.0f;
+    const float pauseLivesOffsetY = 171.0f;
+    const float pauseScoreOffsetX = 170.0f;
+    const float pauseScoreOffsetY = 175.0f;
+    const float pauseMoneyOffsetX = 70.0f;
+    const float pauseMoneyOffsetY = 155.0f;
+
+    void DrawPauseMenu(float deltaTime);
 };
 
 #endif // GAME_MANAGER_H

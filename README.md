@@ -21,7 +21,7 @@ A: To move to the left.<br/>
 S: To crouch.<br/>
 D: To move to the right.<br/>
 
-Spacebar: Enter/exit the store and buy the items in the store.<br/>
+Spacebar: Enter/exit the store and buy the items in the store. Exit win/lose screens aswell as main menu.<br/>
 J: To make a punch.<br/>
 
 F1: To see the hiboxes of the player and the enemies.<br/>
