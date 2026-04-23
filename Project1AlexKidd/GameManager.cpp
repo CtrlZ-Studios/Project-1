@@ -284,19 +284,6 @@ void GameManager::Update() {
     UpdateCamera();
     CullOffscreen();
 
-    // Update Enemies
-    for (int i = (int)enemies.size() - 1; i >= 0; i--) {
-        enemies[i]->Update(dt, *map);
-        
-        // Collision: Player Punch vs Enemy (Plant, Lava, and Quicksand are invincible)
-        if (player->GetState() == PlayerState::ATTACKING && player->IsAttackHitboxActive()) {
-            if (enemies[i]->GetType() != EnemyType::LAVA && enemies[i]->GetType() != EnemyType::PLANT && enemies[i]->GetType() != EnemyType::QUICKSAND) {
-                if (CheckCollisionRecs(player->GetAttackHitbox(), enemies[i]->GetHitbox())) {
-                    score += 200; 
-                    std::cout << "You gained 200 points by killing an enemy! Total points: " << score << std::endl;
-                    enemies[i]->Die();
-                    if (sound) sound->PlayEnemyDeath();
-                    player->DeactivateAttackHitbox();
     // Update Enemies (Only if NOT in shop)
     if (map->GetCurrentLevel() != 3) {
         for (int i = (int)enemies.size() - 1; i >= 0; i--) {
@@ -309,6 +296,7 @@ void GameManager::Update() {
                         score += 200; 
                         std::cout << "You gained 200 points by killing an enemy! Total points: " << score << std::endl;
                         enemies[i]->Die();
+                        if (sound) sound->PlayEnemyDeath();
                         player->DeactivateAttackHitbox();
                     }
                 }
