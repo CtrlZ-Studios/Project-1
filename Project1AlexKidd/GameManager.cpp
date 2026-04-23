@@ -505,7 +505,7 @@ void GameManager::Draw() {
     }
 
     if (gameWon) {
-        DrawRectangle(camera.target.x - 200, camera.target.y - 150, 400, 300, { 0, 0, 0, 150 });
+        ClearBackground(BLACK);
         const char* gameWonText = "Game Won!";
         int gwWidth = MeasureText(gameWonText, 20);
         DrawText(gameWonText, camera.target.x - (gwWidth / 2), camera.target.y - 20, 20, GOLD);
