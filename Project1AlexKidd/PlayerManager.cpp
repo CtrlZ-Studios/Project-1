@@ -207,6 +207,15 @@ void PlayerManager::Update(float deltaTime, const MapManager& map, SoundManager*
                             applyLandingFriction = false; // Reset once stopped
                         }
                     }
+                } else {
+                    // --- NEW: Simple linear air friction when no keys are pressed ---
+                    if (velocity.x > 0) {
+                        velocity.x -= airFriction * deltaTime;
+                        if (velocity.x < 0) velocity.x = 0;
+                    } else if (velocity.x < 0) {
+                        velocity.x += airFriction * deltaTime;
+                        if (velocity.x > 0) velocity.x = 0;
+                    }
                 }
             }
         }
@@ -313,11 +322,11 @@ void PlayerManager::Update(float deltaTime, const MapManager& map, SoundManager*
         velocity.y = 0;
     }
 
-    // --- X Movement and Collision ---
+// --- X Movement and Collision ---
     position.x += velocity.x * deltaTime;
     
     Rectangle xHitbox = GetHitbox();
-    // THE MAGIC FIX: Shave the top and bottom so horizontal checks don't scrape the floor or ceiling!
+    // Shave top and bottom so horizontal checks don't scrape the floor or ceiling!
     xHitbox.y += 2.0f;
     xHitbox.height -= 4.0f;
     
@@ -326,14 +335,38 @@ void PlayerManager::Update(float deltaTime, const MapManager& map, SoundManager*
     xHitbox.width -= 1.0f;
 
     if (map.CheckCollision(xHitbox)) {
-        if (velocity.x > 0) { // Moving Right
+        // SMART COLLISION: Slice the hitbox to see WHICH side is penetrating the wall.
+        // This cures the "Heel Snag" bug when walking off ledges.
+        Rectangle leftSliver = { xHitbox.x, xHitbox.y, 1.0f, xHitbox.height };
+        Rectangle rightSliver = { xHitbox.x + xHitbox.width - 1.0f, xHitbox.y, 1.0f, xHitbox.height };
+        
+        bool hitLeft = map.CheckCollision(leftSliver);
+        bool hitRight = map.CheckCollision(rightSliver);
+
+        if (hitRight && !hitLeft) { 
+            // Right side hit a wall
             int tileCol = (int)floorf((xHitbox.x + xHitbox.width) / TILE_SIZE);
             position.x = (float)tileCol * TILE_SIZE - 5.0f;
-        } else if (velocity.x < 0) { // Moving Left
+            if (velocity.x > 0) velocity.x = 0; // Only stop momentum if pushing INTO the wall
+        } 
+        else if (hitLeft && !hitRight) { 
+            // Left side hit a wall
             int tileCol = (int)floorf(xHitbox.x / TILE_SIZE);
             position.x = (float)tileCol * TILE_SIZE + TILE_SIZE + 5.0f;
+            if (velocity.x < 0) velocity.x = 0; // Only stop momentum if pushing INTO the wall
+        } 
+        else {
+            // Fallback (e.g., completely squeezed between two blocks somehow)
+            if (velocity.x > 0) {
+                int tileCol = (int)floorf((xHitbox.x + xHitbox.width) / TILE_SIZE);
+                position.x = (float)tileCol * TILE_SIZE - 5.0f;
+                velocity.x = 0;
+            } else if (velocity.x < 0) {
+                int tileCol = (int)floorf(xHitbox.x / TILE_SIZE);
+                position.x = (float)tileCol * TILE_SIZE + TILE_SIZE + 5.0f;
+                velocity.x = 0;
+            }
         }
-        velocity.x = 0;
     }
 
     // Map Boundaries Check
@@ -398,7 +431,8 @@ void PlayerManager::Update(float deltaTime, const MapManager& map, SoundManager*
 void PlayerManager::Draw(bool showDebug) {
     if (state == PlayerState::DYING && deathSpriteLoaded) {
         Rectangle source = { currentFrame * 16.0f, 0, 16.0f, 24.0f };
-        DrawTextureRec(deathSpriteSheet, source, position, WHITE);
+        Vector2 drawPos = { position.x - 8.0f, position.y }; // Center 16px sprite on hitbox center (position.x)
+        DrawTextureRec(deathSpriteSheet, source, drawPos, WHITE);
     } 
     else if (IsInvincible() && invencibleSpriteLoaded) {
         // Directly use currentFrame since the invincible sheet matches the normal sheet layout

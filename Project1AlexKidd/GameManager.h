@@ -24,6 +24,8 @@ public:
     void Update();
     void Draw();
     void PlayerDied();
+    void EnterShop();
+    void ExitShop();
 
     PlayerManager* GetPlayerManager() { return player; }
     MapManager* GetMapManager() { return map; }
@@ -31,10 +33,17 @@ public:
     Camera2D& GetCamera() { return camera; }
 
     static const bool DYNAMIC_MONEY_DROPS = false;
+    bool shop1UpBought = false;
+
+    // Shop UI Configuration
+    const float shopUIWidthBlocks = 4.5f;
+    const float shopUIHeightBlocks = 0.5f;
+    const float shopUIOffsetXBlocks = 0.0f;
+    const float shopUIOffsetYBlocks = 1.5f;
 
 private:
-    void ClearEnemies();
-    void SpawnEnemies();
+    void ClearEnemies(bool returningFromShop = false);
+    void SpawnEnemies(bool returningFromShop = false);
     void RestartLevel();
     void UpdateCamera();
     void CullOffscreen();
@@ -54,8 +63,15 @@ private:
     // Progression System
     int lives = 3;
     int score = 0;
+    int previousLevel = 1;
     bool isGameOver = false;
     bool gameOverSoundPlayed = false;
+    bool gameWon = false;
+
+    // Menu System (Level 0)
+    float menuTimer = 0.0f;
+    int menuColorVariant = 0;
+    float menuFlickerTimer = 0.0f;
 };
 
 #endif // GAME_MANAGER_H

@@ -27,11 +27,20 @@ public:
     MapManager();
     ~MapManager();
 
+    // Shop System Constants
+    const float doorOffsetX = 31.0f; // 1.9375 blocks right
+    const float doorOffsetY = -12.0f; // 1 block up
+    const float oneUpOffsetX = 8.0f; // half block right
+    const float oneUpOffsetY = -8.0f; // half block up
+    const float exitOffsetX = 4.0f;
+    const float exitOffsetY = 4.0f;
+
     void DrawBackground();
-    void DrawTiles();
+    void DrawTiles(bool shop1UpBought = false);
     void DrawForeground();
-    void DrawTile(int tileID, Vector2 position);
-    void LoadLevel(int levelIndex);
+    void DrawMainMenu(float menuTimer, int colorVariant);
+    void DrawTile(int tileID, Vector2 position, bool shop1UpBought = false);
+    void LoadLevel(int levelIndex, bool returningFromShop = false);
     InteractionResult InteractWithMap(Rectangle hitbox, int interactionType);
     bool CheckCollision(Rectangle hitbox) const;
     void CullOffscreen(float leftEdgeX);
@@ -42,22 +51,32 @@ public:
     const std::vector<EnemySpawn>& GetEnemySpawns() const { return enemySpawns; }
     int GetCurrentLevel() const { return currentLevel; }
     int GetMapCols() const { return currentCols; }
+    int GetMapRows() const { return currentRows; }
     int GetWorldWidth() const { return currentCols * TILE_SIZE; }
 
     int GetTile(int r, int c) const {
-        if (r >= 0 && r < MAP_ROWS && c >= 0 && c < currentCols) return mapData[r][c];
+        if (r >= 0 && r < currentRows && c >= 0 && c < currentCols) return mapData[r][c];
         return 0;
     }
 
     void SetTile(int r, int c, int tileID) {
-        if (r >= 0 && r < MAP_ROWS && c >= 0 && c < currentCols) mapData[r][c] = tileID;
+        if (r >= 0 && r < currentRows && c >= 0 && c < currentCols) mapData[r][c] = tileID;
     }
 
 private:
     Texture2D tileset;
+    Texture2D shopTex, doorTex, shopInteriorTex, oneUpTex, exitTex;
     bool tilesetLoaded;
+
+    // Main Menu Textures
+    Texture2D titlescreen, starttitle, redtitle, greentitle, yellowtitle, enemytitle, flytitle, boattitle, swimtitle, treetitle;
+    bool menuTexturesLoaded;
+    void LoadMenuTextures();
+    void UnloadMenuTextures();
+
     int currentLevel;
     int currentCols;
+    int currentRows;
     std::vector<EnemySpawn> enemySpawns;
     int mapData[15][MAX_MAP_COLS];
     Vector2 spawnPosition;

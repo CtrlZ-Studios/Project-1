@@ -37,44 +37,100 @@ static const int LEVEL_2_DATA[MAP_ROWS][MAP2_COLS] = {
    { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-8 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-8 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-8 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-8 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-8 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
    { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
    { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
-   { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 ,14 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+   { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 2 , 2 , 2 , 2 , 2 , 2 ,-7 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 3 , 0 , 0 , 0 , 0 ,14 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,50 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
    { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
    { 0 , 0 ,-1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 0 , 0 , 0 ,-7 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 , 0 ,-7 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-8 , 0 , 0 ,-8 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 , 2 , 2 , 2 , 3 , 2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 ,-7 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,-3 , 0 , 0 , 0 , 0 , 0 ,14 , 0 , 0 , 0 ,14 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
    { 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 ,-6 , 1 ,-6 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1},
    { 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 ,26 , 1 ,26 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1}
 };
 
-MapManager::MapManager() : tilesetLoaded(false), currentLevel(1), currentCols(MAP_COLS) {
+static const int LEVEL_3_DATA[12][16] = {
+    {41,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0,43, 0, 0, 0, 0,42, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0,99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+};
+
+MapManager::MapManager() : tilesetLoaded(false), menuTexturesLoaded(false), currentLevel(1), currentCols(MAP_COLS), currentRows(MAP_ROWS) {
     tileset = LoadTexture("Sprites/tileset.png");
     if (tileset.id != 0) tilesetLoaded = true;
+
+    shopTex = LoadTexture("Sprites/shop.png");
+    doorTex = LoadTexture("Sprites/door.png");
+    shopInteriorTex = LoadTexture("Sprites/shopinterior.png");
+    oneUpTex = LoadTexture("Sprites/1up.png");
+    exitTex = LoadTexture("Sprites/exit.png");
+
+    SetTextureFilter(shopTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(doorTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(shopInteriorTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(oneUpTex, TEXTURE_FILTER_POINT);
+    SetTextureFilter(exitTex, TEXTURE_FILTER_POINT);
+
     LoadLevel(1);
 }
 
 MapManager::~MapManager() {
-    if (tilesetLoaded) {
-        UnloadTexture(tileset);
-    }
+    if (tilesetLoaded) UnloadTexture(tileset);
+    UnloadTexture(shopTex);
+    UnloadTexture(doorTex);
+    UnloadTexture(shopInteriorTex);
+    UnloadTexture(oneUpTex);
+    UnloadTexture(exitTex);
+    UnloadMenuTextures();
 }
 
-void MapManager::LoadLevel(int levelIndex) {
+void MapManager::LoadLevel(int levelIndex, bool returningFromShop) {
+    if (currentLevel == 0 && levelIndex != 0) {
+        UnloadMenuTextures();
+    }
+
     currentLevel = levelIndex;
     enemySpawns.clear();
     std::memset(mapData, 0, sizeof(mapData));
 
-    if (levelIndex == 2) {
+    if (levelIndex == 0) {
+        LoadMenuTextures();
+        currentCols = 16;
+        currentRows = 12;
+        spawnPosition = { 0, 0 };
+        return;
+    }
+
+    if (levelIndex == 3) {
+        currentCols = 16;
+        currentRows = 15;
+        for (int r = 0; r < 15; r++) {
+            std::memcpy(mapData[r], LEVEL_3_DATA[r], sizeof(LEVEL_3_DATA[r]));
+        }
+    } else if (levelIndex == 2) {
         currentCols = MAP2_COLS;
+        currentRows = MAP_ROWS;
         for (int r = 0; r < MAP_ROWS; r++) {
             std::memcpy(mapData[r], LEVEL_2_DATA[r], sizeof(LEVEL_2_DATA[r]));
         }
+
+        // --- INJECT SHOP INTO LEVEL 2 ---
+        mapData[8][3] = 39;  // Draw shop exterior starting at row 8, col 3
+        mapData[11][3] = 40; // Draw door interact hitbox at row 11, col 3
     } else {
         currentCols = MAP_COLS;
+        currentRows = MAP_ROWS;
         for (int r = 0; r < MAP_ROWS; r++) {
             std::memcpy(mapData[r], LEVEL_1_DATA[r], sizeof(LEVEL_1_DATA[r]));
         }
     }
 
     // Scan for spawn marker (-1, -9) and enemies (-2 to -8)
-    for (int r = 0; r < MAP_ROWS; r++) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             if (mapData[r][c] == -1) {
                 // Default player spawn: Centered in tile
@@ -104,7 +160,7 @@ void MapManager::LoadLevel(int levelIndex) {
 void MapManager::DrawBackground() {
     Rectangle skySource = { 16, 16, 16, 16 }; // Row 2, Col 2 (1-indexed)
 
-    for (int r = 0; r < MAP_ROWS; r++) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
             
@@ -118,14 +174,14 @@ void MapManager::DrawBackground() {
     }
 }
 
-void MapManager::DrawTiles() {
-    for (int r = 0; r < MAP_ROWS; r++) {
+void MapManager::DrawTiles(bool shop1UpBought) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             Vector2 pos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
             
             // Draw specific tiles (Skip 12 and 27, they are foreground)
             if (mapData[r][c] != 0 && mapData[r][c] != 12 && mapData[r][c] != 27) {
-                DrawTile(mapData[r][c], pos);
+                DrawTile(mapData[r][c], pos, shop1UpBought);
             }
         }
     }
@@ -136,7 +192,7 @@ void MapManager::DrawForeground() {
     Rectangle source12 = { 32, 128, 16, 16 }; // Grass_2_top (Tile 12)
     Rectangle source27 = { 32, 192, 16, 16 }; // Castle's grass tile (Tile 27)
 
-    for (int r = 0; r < MAP_ROWS; r++) {
+    for (int r = 0; r < currentRows; r++) {
         for (int c = 0; c < currentCols; c++) {
             if (mapData[r][c] == 12 || mapData[r][c] == 27) {
                 Rectangle currentSource = (mapData[r][c] == 12) ? source12 : source27;
@@ -147,14 +203,42 @@ void MapManager::DrawForeground() {
     }
 }
 
-void MapManager::DrawTile(int tileID, Vector2 position) {
-    if (!tilesetLoaded || tileID == 0) return;
+void MapManager::DrawTile(int tileID, Vector2 position, bool shop1UpBought) {
+    if (tileID == 0) return;
+
+    // Custom Full-Size Textures
+    if (tileID == 39) {
+        // The +9 offsets it perfectly to the ground
+        DrawTexture(shopTex, (int)position.x, (int)position.y + 9, WHITE);
+        return;
+    }
+    if (tileID == 41) {
+        DrawTexture(shopInteriorTex, (int)position.x, (int)position.y, WHITE);
+        return;
+    }
     
     // Task 3: Tile 38 Rendering Offset (-8 pixels Y)
     if (tileID == 38) {
         position.y -= 8;
     }
 
+    // Shop System Tiles
+    if (tileID == 40) {
+        DrawTexture(doorTex, (int)(position.x + doorOffsetX), (int)(position.y + doorOffsetY), WHITE);
+        return;
+    }
+    if (tileID == 42) {
+        if (!shop1UpBought) {
+            DrawTexture(oneUpTex, (int)(position.x + oneUpOffsetX), (int)(position.y + oneUpOffsetY), WHITE);
+        }
+        return;
+    }
+    if (tileID == 43) {
+        DrawTexture(exitTex, (int)(position.x + exitOffsetX), (int)(position.y + exitOffsetY), WHITE);
+        return;
+    }
+
+    if (!tilesetLoaded) return;
     Rectangle source = { 0, 0, 16, 16 }; 
     switch (tileID) {
         case 1: source = { 32, 112, 16, 16 }; break; // Rock block
@@ -195,6 +279,8 @@ void MapManager::DrawTile(int tileID, Vector2 position) {
         case 36: source = {0, 272, 16, 16}; break; // Castle's left old man tile
         case 37: source = {16, 272, 16, 16}; break; // Castle's right old man tile
         case 38: source = {0, 288, 32, 40}; break; // Castle's top piece
+        case 50: source = {16, 192, 16, 16}; break; // Last Onigiri tile
+        case 99: return;
     }
     DrawTextureRec(tileset, source, position, WHITE);
 }
@@ -242,7 +328,7 @@ InteractionResult MapManager::InteractWithMap(Rectangle hitbox, int interactionT
     } else if (interactionType == 3) {
         for (int r = startRow; r <= endRow; r++) {
             for (int c = startCol; c <= endCol; c++) {
-                if (mapData[r][c] == 3 || mapData[r][c] == 21 || mapData[r][c] == 25) {
+                if (mapData[r][c] == 3 || mapData[r][c] == 21 || mapData[r][c] == 25 || mapData[r][c] == 50) {
                     Rectangle tileRect = { (float)c * TILE_SIZE + 1, (float)r * TILE_SIZE, (float)TILE_SIZE - 2, (float)TILE_SIZE };
                     if (CheckCollisionRecs(hitbox, tileRect)) {
                         result.tileID = mapData[r][c];
@@ -344,5 +430,82 @@ Vector2 MapManager::GetSafeRespawnPosition(float leftCameraX, const std::vector<
         }
     }
     return GetSpawnPosition(); // Fallback to map start if no safe space exists
+}
+
+
+void MapManager::LoadMenuTextures() {
+    if (menuTexturesLoaded) return;
+    titlescreen = LoadTexture("Sprites/MainMenu/titlescreen.png");
+    starttitle = LoadTexture("Sprites/MainMenu/starttitle.png");
+    redtitle = LoadTexture("Sprites/MainMenu/redtitle.png");
+    greentitle = LoadTexture("Sprites/MainMenu/greentitle.png");
+    yellowtitle = LoadTexture("Sprites/MainMenu/yellowtitle.png");
+    enemytitle = LoadTexture("Sprites/MainMenu/enemytitle.png");
+    flytitle = LoadTexture("Sprites/MainMenu/flytitle.png");
+    boattitle = LoadTexture("Sprites/MainMenu/boattitle.png");
+    swimtitle = LoadTexture("Sprites/MainMenu/swimtitle.png");
+    treetitle = LoadTexture("Sprites/MainMenu/treetitle.png");
+    
+    SetTextureFilter(titlescreen, TEXTURE_FILTER_POINT);
+    SetTextureFilter(starttitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(redtitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(greentitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(yellowtitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(enemytitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(flytitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(boattitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(swimtitle, TEXTURE_FILTER_POINT);
+    SetTextureFilter(treetitle, TEXTURE_FILTER_POINT);
+    
+    menuTexturesLoaded = true;
+}
+
+void MapManager::UnloadMenuTextures() {
+    if (!menuTexturesLoaded) return;
+    UnloadTexture(titlescreen);
+    UnloadTexture(starttitle);
+    UnloadTexture(redtitle);
+    UnloadTexture(greentitle);
+    UnloadTexture(yellowtitle);
+    UnloadTexture(enemytitle);
+    UnloadTexture(flytitle);
+    UnloadTexture(boattitle);
+    UnloadTexture(swimtitle);
+    UnloadTexture(treetitle);
+    menuTexturesLoaded = false;
+}
+
+void MapManager::DrawMainMenu(float menuTimer, int colorVariant) {
+    if (!menuTexturesLoaded) return;
+
+    const float MENU_STEP_INTERVAL = 0.2f;
+    const Vector2 POS_SWIM     = { 167, 7   };
+    const Vector2 POS_BOAT     = { 103, 119 };
+    const Vector2 POS_TREE     = { 8,   7  };
+    const Vector2 POS_FLY      = { 215, 63  };
+    const Vector2 POS_ENEMY    = { 8,   71  };
+    const Vector2 POS_TITLE    = { 61,  16  };
+
+    // Draw background
+    if (menuTimer >= 0.5f + 5 * MENU_STEP_INTERVAL) {
+        DrawTexture(starttitle, 0, 0, WHITE);
+    } else {
+        DrawTexture(titlescreen, 0, 0, WHITE);
+    }
+
+    // Reveal stages (back to front order relative to each other)
+    if (menuTimer >= 0.5f) DrawTexture(swimtitle, (int)POS_SWIM.x, (int)POS_SWIM.y, WHITE);
+    if (menuTimer >= 0.5f + 1 * MENU_STEP_INTERVAL) DrawTexture(boattitle, (int)POS_BOAT.x, (int)POS_BOAT.y, WHITE);
+    if (menuTimer >= 0.5f + 2 * MENU_STEP_INTERVAL) DrawTexture(treetitle, (int)POS_TREE.x, (int)POS_TREE.y, WHITE);
+    if (menuTimer >= 0.5f + 3 * MENU_STEP_INTERVAL) DrawTexture(flytitle, (int)POS_FLY.x, (int)POS_FLY.y, WHITE);
+    if (menuTimer >= 0.5f + 4 * MENU_STEP_INTERVAL) DrawTexture(enemytitle, (int)POS_ENEMY.x, (int)POS_ENEMY.y, WHITE);
+
+    // Color title (flicker)
+    Texture2D currentTitle = redtitle;
+    if (menuTimer >= 0.5f + 6 * MENU_STEP_INTERVAL) {
+        if (colorVariant == 1) currentTitle = greentitle;
+        else if (colorVariant == 2) currentTitle = yellowtitle;
+    }
+    DrawTexture(currentTitle, (int)POS_TITLE.x, (int)POS_TITLE.y, WHITE);
 }
 
