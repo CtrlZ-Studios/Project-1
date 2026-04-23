@@ -35,6 +35,12 @@ public:
     static const bool DYNAMIC_MONEY_DROPS = false;
     bool shop1UpBought = false;
 
+    // Shop UI Configuration
+    const float shopUIWidthBlocks = 4.5f;
+    const float shopUIHeightBlocks = 0.5f;
+    const float shopUIOffsetXBlocks = 0.0f;
+    const float shopUIOffsetYBlocks = 1.5f;
+
 private:
     void ClearEnemies(bool returningFromShop = false);
     void SpawnEnemies(bool returningFromShop = false);

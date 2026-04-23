@@ -557,4 +557,42 @@ void GameManager::Draw() {
     
     // Foreground Pass (Tile 12 Tall Grass)
     map->DrawForeground();
+
+    // --- SHOP UI OVERLAY ---
+    if (map->GetCurrentLevel() == 3) {
+        Vector2 uiBasePos = { -1, -1 };
+
+        // 1. Scan the map for the anchor tile (99)
+        for (int r = 0; r < map->GetMapRows(); r++) {
+            for (int c = 0; c < map->GetMapCols(); c++) {
+                if (map->GetTile(r, c) == 99) {
+                    uiBasePos = { (float)c * TILE_SIZE, (float)r * TILE_SIZE };
+                    break;
+                }
+            }
+            if (uiBasePos.x != -1) break;
+        }
+
+        // 2. Draw the UI if the anchor was found
+        if (uiBasePos.x != -1) {
+            float boxX = uiBasePos.x + (shopUIOffsetXBlocks * TILE_SIZE);
+            float boxY = uiBasePos.y + (shopUIOffsetYBlocks * TILE_SIZE);
+            float boxW = shopUIWidthBlocks * TILE_SIZE;
+            float boxH = shopUIHeightBlocks * TILE_SIZE;
+
+            // Draw Blue background (SKYBLUE is built into Raylib)
+            DrawRectangle((int)boxX, (int)boxY, (int)boxW, (int)boxH, SKYBLUE);
+
+            // Draw Yuan symbol aligned to the left
+            int fontSize = 10;
+            DrawText("¥", (int)boxX + 2, (int)boxY, fontSize, WHITE);
+
+            // Draw right-aligned money
+            std::string moneyStr = std::to_string(playerMoney);
+            int textW = MeasureText(moneyStr.c_str(), fontSize);
+
+            // Start at the right edge of the box, push left by the text's width and a 2px padding
+            DrawText(moneyStr.c_str(), (int)(boxX + boxW - textW - 2), (int)boxY, fontSize, WHITE);
+        }
+    }
 }
