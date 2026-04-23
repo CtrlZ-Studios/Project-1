@@ -268,36 +268,38 @@ void GameManager::Update() {
     if (isPaused) return; // Freeze everything
 
     // Global Debug Keys (Always active)
-    if (IsKeyPressed(KEY_F1)) {
-        showDebugHitboxes = !showDebugHitboxes;
-    }
-    if (IsKeyPressed(KEY_F2)) {
-        playerMoney = 0;
-        betweenLevelState = BetweenLevelState::BEFORE_LEVEL_1;
-        betweenFlickerTimer = 0.0f;
-        betweenFlickerState = false;
-        music->Play(MusicTrack::LEVEL_START);
-    }
-    if (IsKeyPressed(KEY_F3)) {
-        RestartLevel();
-    }
-    if (IsKeyPressed(KEY_F4)) {
-        betweenLevelState = BetweenLevelState::BEFORE_LEVEL_1;
-        betweenFlickerTimer = 0.0f;
-        betweenFlickerState = false;
-        music->Play(MusicTrack::LEVEL_START);
-    }
-    if (IsKeyPressed(KEY_F5)) {
-        betweenLevelState = BetweenLevelState::BEFORE_LEVEL_2;
-        betweenFlickerTimer = 0.0f;
-        betweenFlickerState = false;
-        music->Play(MusicTrack::LEVEL_START);
-    }
-    if (IsKeyPressed(KEY_F6)) {
-        PlayerDied();
-    }
-    if (IsKeyPressed(KEY_F7)) {
-        player->TogglePermInvincibility();
+    if (DEBUG_MODE) {
+        if (IsKeyPressed(KEY_F1)) {
+            showDebugHitboxes = !showDebugHitboxes;
+        }
+        if (IsKeyPressed(KEY_F2)) {
+            playerMoney = 0;
+            betweenLevelState = BetweenLevelState::BEFORE_LEVEL_1;
+            betweenFlickerTimer = 0.0f;
+            betweenFlickerState = false;
+            music->Play(MusicTrack::LEVEL_START);
+        }
+        if (IsKeyPressed(KEY_F3)) {
+            RestartLevel();
+        }
+        if (IsKeyPressed(KEY_F4)) {
+            betweenLevelState = BetweenLevelState::BEFORE_LEVEL_1;
+            betweenFlickerTimer = 0.0f;
+            betweenFlickerState = false;
+            music->Play(MusicTrack::LEVEL_START);
+        }
+        if (IsKeyPressed(KEY_F5)) {
+            betweenLevelState = BetweenLevelState::BEFORE_LEVEL_2;
+            betweenFlickerTimer = 0.0f;
+            betweenFlickerState = false;
+            music->Play(MusicTrack::LEVEL_START);
+        }
+        if (IsKeyPressed(KEY_F6)) {
+            PlayerDied();
+        }
+        if (IsKeyPressed(KEY_F7)) {
+            player->TogglePermInvincibility();
+        }
     }
 
     if (gameWon) {

@@ -34,6 +34,7 @@ public:
     Camera2D& GetCamera() { return camera; }
 
     static const bool DYNAMIC_MONEY_DROPS = false;
+    static const bool DEBUG_MODE = false;
     bool shop1UpBought = false;
 
     // Shop UI Configuration
