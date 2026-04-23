@@ -91,6 +91,7 @@ private:
 
     // --- Pause Menu ---
     bool isPaused = false;
+    bool showSplashScreen = true;
 
     // Pause textures
     Texture2D pauseMapTex;      // Sprites/pausemap.png

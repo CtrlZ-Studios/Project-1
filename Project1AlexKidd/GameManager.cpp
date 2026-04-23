@@ -194,6 +194,12 @@ void GameManager::CullOffscreen() {
 }
 
 void GameManager::Update() {
+    if (showSplashScreen) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            showSplashScreen = false;
+        }
+        return; // freeze everything until dismissed
+    }
     music->Update();
 
     // --- Between Level Screen logic ---
@@ -627,6 +633,36 @@ void GameManager::Update() {
 }
 
 void GameManager::Draw() {
+    if (showSplashScreen) {
+        ClearBackground(BLACK);
+        int fontSize = 8;
+        int lineSpacing = 13;
+        int marginX = 10;
+        int startY = 20;
+        const char* lines[] = {
+            "Partial port of Alex Kidd in",
+            "Miracle World to PC.",
+            "",
+            "Project 1: Videogame Design",
+            "and Development - CITM Barcelona",
+            "",
+            "Team members:",
+            "Shaheer Ali, Javier Jimenez,",
+            "Aran Estera & Camille Lugo",
+            "",
+            "Tutored by: Rodrigo De Pedro",
+            "",
+            "github.com/CtrlZ-Studios/Project-1",
+            "",
+            "Press SPACE to continue"
+        };
+        int lineCount = sizeof(lines) / sizeof(lines[0]);
+        for (int i = 0; i < lineCount; i++) {
+            DrawText(lines[i], marginX, startY + i * lineSpacing, fontSize, WHITE);
+        }
+        return;
+    }
+
     if (betweenLevelState != BetweenLevelState::NONE) {
         EndMode2D();
         DrawBetweenLevelScreen();
