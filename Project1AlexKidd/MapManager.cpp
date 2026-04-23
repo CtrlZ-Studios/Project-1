@@ -279,6 +279,7 @@ void MapManager::DrawTile(int tileID, Vector2 position, bool shop1UpBought) {
         case 36: source = {0, 272, 16, 16}; break; // Castle's left old man tile
         case 37: source = {16, 272, 16, 16}; break; // Castle's right old man tile
         case 38: source = {0, 288, 32, 40}; break; // Castle's top piece
+        case 50: source = {16, 192, 16, 16}; break; // Last Onigiri tile
     }
     DrawTextureRec(tileset, source, position, WHITE);
 }
